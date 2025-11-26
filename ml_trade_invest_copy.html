@@ -1,0 +1,1279 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Chi Tiết - Dự đoán Giá Thép VN (V2.1 - Updated Pipeline B)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6fa; padding: 20px; color: #2c3e50; }
+        .container { max-width: 1150px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 1.5rem; color: #2c3e50; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #7f8c8d; font-size: 0.9rem; margin-bottom: 20px; }
+        .workflow-svg { width: 100%; background: white; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); }
+        .box { fill: white; stroke-width: 1.5; }
+        .box-input { fill: #e3f2fd; stroke: #1976d2; }
+        .box-process { fill: #fff8e1; stroke: #f9a825; }
+        .box-label { fill: #fce4ec; stroke: #c2185b; }
+        .box-model { fill: #e8f5e9; stroke: #388e3c; }
+        .box-finance { fill: #f3e5f5; stroke: #8e24aa; }
+        .box-ensemble { fill: #fff3e0; stroke: #ef6c00; }
+        .box-output { fill: #ffebee; stroke: #c62828; }
+        .box-decision { fill: #e8eaf6; stroke: #3f51b5; }
+        .box-execute { fill: #e0f2f1; stroke: #00695c; }
+        .box-eval { fill: #e0f7fa; stroke: #00838f; }
+        .box-explain { fill: #fffde7; stroke: #f9a825; stroke-dasharray: 5,3; }
+        .box-risk { fill: #fbe9e7; stroke: #d84315; }
+        .box-calibrate { fill: #f1f8e9; stroke: #689f38; }
+        .box-regime { fill: #e1f5fe; stroke: #0277bd; }
+        .box-regression { fill: #ede7f6; stroke: #512da8; }
+        .box-baseline { fill: #eceff1; stroke: #546e7a; }
+        .box-imbalance { fill: #fff3e0; stroke: #e65100; }
+        .box-new { fill: #fff9c4; stroke: #f57f17; stroke-width: 2; }
+
+        .title-lg { font-size: 14px; fill: #2c3e50; font-weight: 700; }
+        .title-md { font-size: 12px; fill: #2c3e50; font-weight: 600; }
+        .title-sm { font-size: 10px; fill: #455a64; font-weight: 600; }
+        .text-normal { font-size: 9.5px; fill: #546e7a; }
+        .text-small { font-size: 8.5px; fill: #78909c; }
+        .text-highlight { font-size: 9.5px; fill: #1565c0; font-weight: 600; }
+        .text-formula { font-size: 9px; fill: #6a1b9a; font-family: 'Courier New', monospace; }
+        .text-warn { font-size: 9px; fill: #c62828; }
+        .text-explain { font-size: 9px; fill: #e65100; font-style: italic; }
+        .text-why { font-size: 9px; fill: #2e7d32; }
+        .text-new { font-size: 9px; fill: #e65100; font-weight: 600; }
+        .arrow { stroke: #90a4ae; stroke-width: 1.5; fill: none; }
+        .arrow-bold { stroke: #546e7a; stroke-width: 2.5; fill: none; }
+        .arrow-a { stroke: #1565c0; stroke-width: 2.5; fill: none; }
+        .arrow-b { stroke: #ad1457; stroke-width: 2.5; fill: none; }
+        .phase-label { font-size: 13px; fill: #2c3e50; font-weight: 700; }
+        .phase-bg { fill: #eceff1; }
+        .pipeline-a-bg { fill: #e3f2fd; opacity: 0.4; }
+        .pipeline-b-bg { fill: #fce4ec; opacity: 0.4; }
+        .section-divider { stroke: #cfd8dc; stroke-width: 1; }
+        .new-badge { font-size: 8px; fill: white; font-weight: 700; }
+        .legend { margin-top: 15px; padding: 12px 20px; background: white; border-radius: 8px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; font-size: 0.65rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .legend-box { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔧 WORKFLOW DỰ ĐOÁN GIÁ CỔ PHIẾU NGÀNH THÉP VIỆT NAM - V2.1</h1>
+    <p class="subtitle">Cấu trúc Song Song: Pipeline A (Trading) + Pipeline B (Investment - Updated)</p>
+
+    <svg class="workflow-svg" viewBox="0 0 1100 9800">
+
+        <!-- ==================== HEADER: PHẦN CHUNG ==================== -->
+        <rect x="0" y="0" width="1100" height="55" fill="#37474f"/>
+        <text x="550" y="35" text-anchor="middle" class="title-lg" fill="white">📦 PHẦN CHUNG (Áp dụng cho cả 2 Pipeline)</text>
+
+        <!-- ==================== PHASE 1: INPUT DATA ==================== -->
+        <rect x="0" y="60" width="1100" height="480" class="phase-bg" opacity="0.3"/>
+        <text x="550" y="90" text-anchor="middle" class="phase-label">PHASE 1: INPUT DATA (36 Features)</text>
+        <line x1="50" y1="105" x2="1050" y2="105" class="section-divider"/>
+
+        <!-- Row 1 -->
+        <rect x="25" y="120" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="150" y="142" text-anchor="middle" class="title-md">📊 Giá & Volume (3)</text>
+        <text x="40" y="162" class="text-normal">• gap_open</text>
+        <text x="40" y="177" class="text-normal">• intraday_return</text>
+        <text x="40" y="192" class="text-normal">• Intraday_Range</text>
+        <text x="40" y="212" class="text-small">Tâm lý qua đêm, momentum intraday</text>
+
+        <rect x="290" y="120" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="415" y="142" text-anchor="middle" class="title-md">⏮️ Lag Features (2)</text>
+        <text x="305" y="162" class="text-normal">• return_lag_5</text>
+        <text x="305" y="177" class="text-normal">• return_lag_20</text>
+        <text x="305" y="197" class="text-small">Quán tính giá hôm qua</text>
+        <text x="305" y="212" class="text-small">và xu hướng cả tuần</text>
+
+        <rect x="555" y="120" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="680" y="142" text-anchor="middle" class="title-md">📈 Kỹ thuật (5)</text>
+        <text x="570" y="162" class="text-normal">• rolling_std_20, rsi_14</text>
+        <text x="570" y="177" class="text-normal">• macd_diff, OBV, ATR_14</text>
+        <text x="570" y="197" class="text-small">Volatility, momentum,</text>
+        <text x="570" y="212" class="text-small">volume accumulation</text>
+
+        <rect x="820" y="120" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="945" y="142" text-anchor="middle" class="title-md">🏗️ Hàng hóa (4)</text>
+        <text x="835" y="162" class="text-normal">• steel_spread</text>
+        <text x="835" y="177" class="text-normal">• price_to_rebar</text>
+        <text x="835" y="192" class="text-normal">• rebar_ret_5d, iron_powder_ret_5d</text>
+        <text x="835" y="212" class="text-small">Biên lợi nhuận, giá thép/quặng</text>
+
+        <!-- Row 2 -->
+        <rect x="25" y="235" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="150" y="257" text-anchor="middle" class="title-md">💰 Tài chính (2)</text>
+        <text x="40" y="277" class="text-normal">• pb (P/B ratio)</text>
+        <text x="40" y="292" class="text-normal">• days_inventory</text>
+        <text x="40" y="312" class="text-small">Định giá sổ sách</text>
+        <text x="40" y="327" class="text-small">Hàng tồn kho (lợi thế ngành thép)</text>
+
+        <rect x="290" y="235" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="415" y="257" text-anchor="middle" class="title-md">🌐 Vĩ mô ngành (2)</text>
+        <text x="305" y="277" class="text-normal">• PMI_Manufacturing_VN</text>
+        <text x="305" y="292" class="text-normal">• HRC_Steel_Price</text>
+        <text x="305" y="312" class="text-small">Leading indicator nhu cầu</text>
+        <text x="305" y="327" class="text-small">Benchmark giá thép toàn cầu</text>
+
+        <rect x="555" y="235" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="680" y="257" text-anchor="middle" class="title-md">🔬 Microstructure (3)</text>
+        <text x="570" y="277" class="text-normal">• ATO_Volume_Ratio</text>
+        <text x="570" y="292" class="text-normal">• ATC_Volume_Ratio</text>
+        <text x="570" y="307" class="text-normal">• Close_Position</text>
+        <text x="570" y="327" class="text-small">Dòng tiền đầu/cuối phiên VN</text>
+
+        <rect x="820" y="235" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="945" y="257" text-anchor="middle" class="title-md">📅 Event & Calendar (5)</text>
+        <text x="835" y="277" class="text-normal">• is_earnings_date</text>
+        <text x="835" y="292" class="text-normal">• Days_Since_Earnings</text>
+        <text x="835" y="307" class="text-normal">• is_dividend_date</text>
+        <text x="835" y="322" class="text-normal">• is_quarter_end, Is_Month_End</text>
+
+        <!-- Row 3 -->
+        <rect x="25" y="350" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="150" y="372" text-anchor="middle" class="title-md">📊 Thị trường (3)</text>
+        <text x="40" y="392" class="text-normal">• vnindex_ret_lag1</text>
+        <text x="40" y="407" class="text-normal">• vnindex_trend</text>
+        <text x="40" y="422" class="text-normal">• is_etf_date</text>
+        <text x="40" y="442" class="text-small">Sức khỏe thị trường chung</text>
+
+        <rect x="290" y="350" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="415" y="372" text-anchor="middle" class="title-md">🏆 Cross-sectional (2)</text>
+        <text x="305" y="392" class="text-normal">• Rank_Volume_in_Sector</text>
+        <text x="305" y="407" class="text-normal">• Rank_Return_in_Sector</text>
+        <text x="305" y="427" class="text-small">Xếp hạng thanh khoản/return</text>
+        <text x="305" y="442" class="text-small">trong ngành thép</text>
+
+        <rect x="555" y="350" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="680" y="372" text-anchor="middle" class="title-md">💸 Dòng tiền (3)</text>
+        <text x="570" y="392" class="text-normal">• foreign_net_ratio</text>
+        <text x="570" y="407" class="text-normal">• prop_net_ratio</text>
+        <text x="570" y="422" class="text-normal">• sector_rel_str</text>
+        <text x="570" y="442" class="text-small">Khối ngoại, tự doanh, sức mạnh ngành</text>
+
+        <rect x="820" y="350" width="250" height="100" rx="6" class="box box-input"/>
+        <text x="945" y="372" text-anchor="middle" class="title-md">📰 Sentiment + Time (2)</text>
+        <text x="835" y="392" class="text-normal">• news_sentiment_score</text>
+        <text x="835" y="407" class="text-normal">• weekday (Thứ 2 - Thứ 6)</text>
+        <text x="835" y="427" class="text-small">Điểm sentiment tin tức (-1 đến +1)</text>
+        <text x="835" y="442" class="text-highlight">Alpha factor mạnh</text>
+
+        <!-- Arrow down -->
+        <path d="M550 470 L550 510" class="arrow-bold" marker-end="url(#arrow-main)"/>
+
+        <!-- ==================== PHASE 2: PREPROCESSING ==================== -->
+        <rect x="0" y="520" width="1100" height="180" class="phase-bg" opacity="0.3"/>
+        <text x="550" y="545" text-anchor="middle" class="phase-label">PHASE 2: DATA PREPROCESSING</text>
+        <line x1="50" y1="560" x2="1050" y2="560" class="section-divider"/>
+
+        <rect x="25" y="575" width="340" height="110" rx="6" class="box box-process"/>
+        <text x="195" y="600" text-anchor="middle" class="title-md">⚙️ Data Cleaning & Scaling</text>
+        <text x="40" y="622" class="text-normal">• Handle missing values (forward fill)</text>
+        <text x="40" y="639" class="text-normal">• Outlier detection (IQR / Z-score)</text>
+        <text x="40" y="656" class="text-normal">• Feature scaling: StandardScaler</text>
+        <text x="40" y="673" class="text-normal">• Categorical encoding: weekday → Label/One-hot</text>
+
+        <rect x="380" y="575" width="340" height="110" rx="6" class="box box-process"/>
+        <text x="550" y="600" text-anchor="middle" class="title-md">📊 Data Split (Time-based)</text>
+        <text x="395" y="622" class="text-normal">• Train: 70% (dữ liệu cũ nhất)</text>
+        <text x="395" y="639" class="text-normal">• Validation: 15% (tuning hyperparameters)</text>
+        <text x="395" y="656" class="text-normal">• Test: 15% (dữ liệu mới nhất)</text>
+        <text x="395" y="673" class="text-highlight">⚠️ KHÔNG shuffle - giữ thứ tự thời gian</text>
+
+        <rect x="735" y="575" width="340" height="110" rx="6" class="box box-new"/>
+        <rect x="735" y="575" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="760" y="587" class="new-badge">MỚI</text>
+        <text x="905" y="600" text-anchor="middle" class="title-md">🔍 Feature Selection</text>
+        <text x="750" y="622" class="text-normal">• Feature Importance → giữ top 15-20</text>
+        <text x="750" y="639" class="text-normal">• Recursive Feature Elimination (RFE)</text>
+        <text x="750" y="656" class="text-normal">• Mutual Information</text>
+        <text x="750" y="673" class="text-highlight">Quy tắc: N_features ≤ sqrt(N_samples)</text>
+
+        <!-- Arrow down -->
+        <path d="M550 700 L550 740" class="arrow-bold" marker-end="url(#arrow-main)"/>
+
+        <!-- ==================== PHASE 3: FINANCE MODELS INTEGRATION ==================== -->
+        <rect x="0" y="750" width="1100" height="420" class="phase-bg" opacity="0.3"/>
+        <text x="550" y="775" text-anchor="middle" class="phase-label">PHASE 3: FINANCE MODELS INTEGRATION (CHUNG)</text>
+        <line x1="50" y1="790" x2="1050" y2="790" class="section-divider"/>
+
+        <!-- Finance Integration Methods -->
+        <rect x="25" y="805" width="340" height="200" rx="6" class="box box-finance"/>
+        <text x="195" y="830" text-anchor="middle" class="title-md">💴 Cách Tích Hợp (Optional)</text>
+
+        <text x="40" y="855" class="title-sm">1. Feature Engineering:</text>
+        <text x="50" y="873" class="text-normal">Thêm các nhân tố tài chính làm input:</text>
+        <text x="50" y="888" class="text-normal">• CAPM (Kỳ vọng lợi nhuận)</text>
+        <text x="50" y="903" class="text-normal">• Fama-French (Size, Value factors)</text>
+
+        <text x="40" y="928" class="title-sm">2. Regularization:</text>
+        <text x="50" y="946" class="text-formula">Final = ML_pred + λ × Finance_prior</text>
+        <text x="50" y="961" class="text-small">Tránh ML dự đoán quá xa thực tế</text>
+
+        <text x="40" y="986" class="title-sm">3. Residual Modeling:</text>
+        <text x="50" y="1001" class="text-small">ML chỉ dự đoán phần "lỗi" của mô hình tài chính</text>
+
+        <!-- GARCH Integration -->
+        <rect x="380" y="805" width="340" height="200" rx="6" class="box box-finance"/>
+        <text x="550" y="830" text-anchor="middle" class="title-md">📉 GARCH Integration (Volatility)</text>
+
+        <text x="395" y="855" class="title-sm">GARCH(1,1):</text>
+        <text x="405" y="873" class="text-formula">σ²_t = ω + α⋅ε²_{t-1} + β⋅σ²_{t-1}</text>
+
+        <text x="395" y="898" class="title-sm">Ứng dụng thực tế:</text>
+        <text x="405" y="916" class="text-normal">• Dự đoán Volatility cho ngày mai</text>
+        <text x="405" y="931" class="text-normal">• Vol cao → Giảm size lệnh (Risk)</text>
+        <text x="405" y="946" class="text-normal">• Vol thấp → Tăng size lệnh</text>
+
+        <text x="395" y="971" class="title-sm">Kết hợp ML:</text>
+        <text x="405" y="989" class="text-normal">Thêm σ_forecast vào Phase 1</text>
+        <text x="405" y="1004" class="text-highlight">Thư viện Python: arch</text>
+
+        <!-- Residual Flow -->
+        <rect x="735" y="805" width="340" height="200" rx="6" class="box box-finance"/>
+        <text x="905" y="830" text-anchor="middle" class="title-md">📊 Residual Modeling Flow</text>
+
+        <text x="750" y="855" class="title-sm">Bước 1: Finance Model</text>
+        <text x="760" y="873" class="text-normal">Tính Return_expected (lý thuyết)</text>
+        <text x="760" y="888" class="text-small">(Dựa trên Beta, Market Risk)</text>
+
+        <text x="750" y="913" class="title-sm">Bước 2: Tính Residual</text>
+        <text x="760" y="931" class="text-formula">Residual = Thực tế - Lý thuyết</text>
+
+        <text x="750" y="956" class="title-sm">Bước 3: ML Model (Alpha)</text>
+        <text x="760" y="974" class="text-normal">Dùng AI dự đoán phần Residual này</text>
+
+        <text x="750" y="999" class="title-sm">Kết quả cuối:</text>
+        <text x="760" y="1017" class="text-highlight">Final = Expected + ML_Residual</text>
+
+        <!-- WHY Box Finance -->
+        <rect x="25" y="1020" width="1050" height="110" rx="6" class="box box-explain"/>
+        <text x="550" y="1045" text-anchor="middle" class="title-md">💡 TẠI SAO cần thêm Phase này?</text>
+
+        <text x="40" y="1073" class="text-why">✓ "Neo" vào lý thuyết: ML giỏi tìm pattern nhưng không hiểu bản chất tài chính. Finance models giúp giữ prediction không quá "bay".</text>
+        <text x="40" y="1091" class="text-why">✓ Quản trị rủi ro tốt hơn: GARCH dự báo độ biến động (risk) tốt hơn ML thuần túy. Biết khi nào "bão" sắp đến để giảm tỷ trọng.</text>
+        <text x="40" y="1109" class="text-why">✓ Tìm Alpha thực sự: Tách phần lợi nhuận từ thị trường chung (Beta) để ML tập trung tìm phần lợi nhuận vượt trội (Alpha).</text>
+
+        <!-- ==================== SPLIT INTO 2 PIPELINES ==================== -->
+        <!-- Arrow splitting -->
+        <path d="M550 1150 L550 1200 L280 1200 L280 1280" class="arrow-a" marker-end="url(#arrow-a)"/>
+        <path d="M550 1150 L550 1200 L820 1200 L820 1280" class="arrow-b" marker-end="url(#arrow-b)"/>
+
+        <!-- Pipeline Headers -->
+        <rect x="0" y="1180" width="1100" height="80" fill="#455a64"/>
+        <text x="280" y="1220" text-anchor="middle" class="title-lg" fill="#bbdefb">🅰️ PIPELINE A: TRADING</text>
+        <text x="280" y="1245" text-anchor="middle" class="text-normal" fill="#90caf9">(Ngắn hạn: 5-20 ngày (1-4 tuần) | Classification)</text>
+        <line x1="550" y1="1190" x2="550" y2="1250" stroke="white" stroke-width="2"/>
+        <text x="820" y="1220" text-anchor="middle" class="title-lg" fill="#f8bbd0">🅱️ PIPELINE B: INVESTMENT</text>
+        <text x="820" y="1245" text-anchor="middle" class="text-normal" fill="#f48fb1">(Trung hạn: 1-3 tháng | Regression)</text>
+
+        <!-- Divider line between pipelines -->
+        <line x1="550" y1="1260" x2="550" y2="9400" stroke="#90a4ae" stroke-width="3" stroke-dasharray="15,8"/>
+
+
+        <!-- ===================================================================================== -->
+        <!-- ==================== PIPELINE A: TRADING (LEFT SIDE) ==================== -->
+        <!-- ===================================================================================== -->
+
+        <!-- ==================== PHASE 4A: TRIPLE BARRIER LABELING ==================== -->
+        <rect x="0" y="1270" width="540" height="700" class="pipeline-a-bg"/>
+        <text x="270" y="1300" text-anchor="middle" class="phase-label" fill="#1565c0">PHASE 4A: TRIPLE BARRIER LABELING</text>
+        <line x1="25" y1="1315" x2="525" y2="1315" class="section-divider"/>
+
+        <!-- What is it -->
+        <rect x="25" y="1330" width="500" height="175" rx="6" class="box box-label"/>
+        <text x="275" y="1355" text-anchor="middle" class="title-md">📦 Triple Barrier là gì?</text>
+
+        <text x="40" y="1380" class="title-sm">Ý tưởng đơn giản:</text>
+        <text x="40" y="1398" class="text-normal">Thay vì hỏi "Giá sẽ tăng bao nhiêu %?" → Ta hỏi "Nếu tôi MUA hôm nay</text>
+        <text x="40" y="1413" class="text-normal">với TP và SL cố định, tôi sẽ THẮNG hay THUA?"</text>
+
+        <text x="40" y="1438" class="title-sm">3 "Rào chắn" (Barrier):</text>
+        <text x="50" y="1456" class="text-normal">🔼 Trần (TP): Chốt lời khi chạm</text>
+        <text x="50" y="1471" class="text-normal">🔽 Sàn (SL): Cắt lỗ khi chạm</text>
+        <text x="50" y="1486" class="text-normal">⏱️ Thời gian: Hết hạn nếu sideway (20 ngày)</text>
+
+        <text x="280" y="1380" class="title-sm">Công thức:</text>
+        <text x="290" y="1398" class="text-formula">TP = Giá_vào × (1 + k × σ)</text>
+        <text x="290" y="1416" class="text-formula">SL = Giá_vào × (1 - k × σ)</text>
+        <text x="280" y="1441" class="text-small">σ = rolling_std_20, k = 3</text>
+        <text x="280" y="1456" class="text-small">Max hold = 20 ngày</text>
+
+        <text x="280" y="1481" class="title-sm">Gán nhãn:</text>
+        <text x="290" y="1499" class="text-small">+1: Chạm TP trước | -1: Chạm SL trước | 0: Timeout</text>
+
+        <!-- Class Imbalance -->
+        <rect x="25" y="1515" width="245" height="175" rx="6" class="box box-imbalance"/>
+        <rect x="25" y="1515" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="50" y="1527" class="new-badge">MỚI</text>
+        <text x="147" y="1540" text-anchor="middle" class="title-md">⚖️ XỬ LÝ CLASS IMBALANCE</text>
+
+        <text x="40" y="1565" class="title-sm">Vấn đề thực tế:</text>
+        <text x="40" y="1583" class="text-small">Thường: 30% Thắng, 25% Thua, 45% Hòa</text>
+        <text x="40" y="1598" class="text-small">→ Model bias về class "Hòa"</text>
+
+        <text x="40" y="1623" class="title-sm">Giải pháp:</text>
+        <text x="50" y="1641" class="text-normal">• Class Weights</text>
+        <text x="50" y="1656" class="text-normal">• SMOTE/ADASYN (chỉ TRAIN)</text>
+        <text x="50" y="1671" class="text-normal">• Focal Loss</text>
+
+        <!-- Purged CV -->
+        <rect x="280" y="1515" width="245" height="175" rx="6" class="box box-new"/>
+        <rect x="280" y="1515" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="305" y="1527" class="new-badge">MỚI</text>
+        <text x="402" y="1540" text-anchor="middle" class="title-md">🔄 PURGED CV</text>
+
+        <text x="295" y="1565" class="title-sm">Vấn đề với CV thông thường:</text>
+        <text x="295" y="1583" class="text-small">Look-ahead bias: Validation chứa</text>
+        <text x="295" y="1598" class="text-small">thông tin từ tương lai</text>
+
+        <text x="295" y="1623" class="title-sm">Purged K-Fold:</text>
+        <text x="305" y="1641" class="text-normal">• Loại samples gần validation</text>
+        <text x="305" y="1656" class="text-normal">• Embargo = 5 ngày</text>
+        <text x="305" y="1671" class="text-highlight">Dùng khi tune hyperparameters</text>
+
+        <!-- WHY Box Triple Barrier -->
+        <rect x="25" y="1700" width="500" height="120" rx="6" class="box box-explain"/>
+        <text x="275" y="1725" text-anchor="middle" class="title-md">💡 TẠI SAO dùng Triple Barrier?</text>
+
+        <text x="40" y="1750" class="text-why">✓ Gắn với thực tế giao dịch: Khi trade thật, bạn luôn đặt TP/SL cố định.</text>
+        <text x="40" y="1768" class="text-why">✓ Output là xác suất: Dễ đặt ngưỡng. "P_thắng = 65%" dễ hiểu hơn "Return = +2.3%"</text>
+        <text x="40" y="1786" class="text-why">✓ Tự động tính risk/reward: TP và SL dựa trên volatility thực tế.</text>
+        <text x="40" y="1804" class="text-why">✓ Xử lý sideway: Có label riêng khi thị trường không rõ xu hướng.</text>
+
+        <!-- Example Triple Barrier -->
+        <rect x="25" y="1830" width="500" height="90" rx="6" class="box box-label"/>
+        <text x="275" y="1855" text-anchor="middle" class="title-md">📝 Ví dụ: HPG ngày 15/01/2025</text>
+        <text x="40" y="1880" class="text-normal">Giá vào = 28,000 | σ = 2% | k = 2 → TP = 29,120 | SL = 26,880</text>
+        <text x="40" y="1898" class="text-normal">Diễn biến: Ngày 1: 28,200 | Ngày 2: 28,500 | Ngày 3: 29,200 (chạm TP!)</text>
+        <text x="40" y="1916" class="text-highlight">→ Label = +1 (THẮNG)</text>
+
+        <!-- Arrow down Pipeline A -->
+        <path d="M270 1935 L270 1980" class="arrow-a" marker-end="url(#arrow-a)"/>
+
+
+        <!-- ==================== PHASE 5A: CLASSIFICATION MODELS ==================== -->
+        <rect x="0" y="1990" width="540" height="850" class="pipeline-a-bg"/>
+        <text x="270" y="2020" text-anchor="middle" class="phase-label" fill="#1565c0">PHASE 5A: CLASSIFICATION MODELS</text>
+        <line x1="25" y1="2035" x2="525" y2="2035" class="section-divider"/>
+
+        <!-- Baseline Models -->
+        <rect x="25" y="2050" width="245" height="180" rx="6" class="box box-baseline"/>
+        <rect x="25" y="2050" width="50" height="18" rx="3" fill="#546e7a"/>
+        <text x="50" y="2062" class="new-badge">MỚI</text>
+        <text x="147" y="2075" text-anchor="middle" class="title-md">📏 BASELINE MODELS</text>
+
+        <text x="40" y="2100" class="title-sm">1. Naive Baseline:</text>
+        <text x="50" y="2118" class="text-normal">Luôn dự đoán class phổ biến nhất</text>
+        <text x="50" y="2133" class="text-small">→ Nếu ML không thắng = vô nghĩa</text>
+
+        <text x="40" y="2158" class="title-sm">2. Logistic Regression:</text>
+        <text x="50" y="2176" class="text-normal">Model tuyến tính, interpretable</text>
+        <text x="50" y="2191" class="text-small">→ XGB chỉ tốt hơn 1-2%? Không đáng</text>
+
+        <text x="40" y="2216" class="title-sm">3. Random Forest:</text>
+        <text x="50" y="2234" class="text-normal">Ensemble cơ bản, ổn định</text>
+
+        <!-- Main Models -->
+        <rect x="280" y="2050" width="245" height="180" rx="6" class="box box-model"/>
+        <text x="402" y="2075" text-anchor="middle" class="title-md">🌲 MAIN MODELS</text>
+
+        <text x="295" y="2100" class="title-sm">XGBoost Classifier:</text>
+        <text x="305" y="2118" class="text-formula">objective='multi:softprob'</text>
+        <text x="305" y="2133" class="text-formula">num_class=3</text>
+
+        <text x="295" y="2158" class="title-sm">LSTM Classifier:</text>
+        <text x="305" y="2176" class="text-small">Input(20 ngày, 36 features)</text>
+        <text x="305" y="2191" class="text-small">→ LSTM(64) → LSTM(32) → Dense(3)</text>
+
+        <text x="295" y="2216" class="title-sm">Khác:</text>
+        <text x="305" y="2234" class="text-normal">LightGBM, CatBoost</text>
+
+        <!-- Hyperparameter Tuning -->
+        <rect x="25" y="2240" width="245" height="175" rx="6" class="box box-new"/>
+        <rect x="25" y="2240" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="50" y="2252" class="new-badge">MỚI</text>
+        <text x="147" y="2265" text-anchor="middle" class="title-md">🎛️ HYPERPARAMETER TUNING</text>
+
+        <text x="40" y="2290" class="title-sm">Phương pháp:</text>
+        <text x="50" y="2308" class="text-normal">1. Bayesian Optimization (Optuna)</text>
+        <text x="50" y="2323" class="text-normal">2. Random Search</text>
+        <text x="50" y="2338" class="text-normal">3. Grid Search (ít params)</text>
+
+        <text x="40" y="2363" class="title-sm">Validation Strategy:</text>
+        <text x="50" y="2381" class="text-highlight">⚠️ PHẢI dùng TimeSeriesSplit</text>
+        <text x="50" y="2396" class="text-warn">❌ KHÔNG dùng K-Fold thường</text>
+
+        <!-- Probability Calibration -->
+        <rect x="280" y="2240" width="245" height="175" rx="6" class="box box-calibrate"/>
+        <rect x="280" y="2240" width="50" height="18" rx="3" fill="#689f38"/>
+        <text x="305" y="2252" class="new-badge">MỚI</text>
+        <text x="402" y="2265" text-anchor="middle" class="title-md">🎯 PROB CALIBRATION</text>
+
+        <text x="295" y="2290" class="title-sm">Vấn đề:</text>
+        <text x="295" y="2308" class="text-normal">Model nói P=70%, thực tế chỉ 55%</text>
+        <text x="295" y="2323" class="text-small">→ Xác suất KHÔNG phản ánh đúng</text>
+
+        <text x="295" y="2348" class="title-sm">Giải pháp:</text>
+        <text x="305" y="2366" class="text-normal">• Platt Scaling</text>
+        <text x="305" y="2381" class="text-normal">• Isotonic Regression</text>
+        <text x="295" y="2401" class="text-highlight">Kiểm tra: Reliability Diagram</text>
+
+        <!-- Feature Selection -->
+        <rect x="25" y="2425" width="500" height="120" rx="6" class="box box-new"/>
+        <rect x="25" y="2425" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="50" y="2437" class="new-badge">MỚI</text>
+        <text x="275" y="2450" text-anchor="middle" class="title-md">🔍 FEATURE SELECTION</text>
+
+        <text x="40" y="2475" class="text-normal">Vấn đề: 36 features cho vài ngàn dòng → risk overfitting cao</text>
+        <text x="40" y="2493" class="text-normal">Phương pháp: Feature Importance | RFE | Mutual Information</text>
+        <text x="40" y="2511" class="text-highlight">Quy tắc ngón tay cái: N_features ≤ sqrt(N_samples) hoặc N/10</text>
+        <text x="40" y="2529" class="text-why">Ít features hơn = model đơn giản hơn = generalize tốt hơn trên dữ liệu mới</text>
+
+        <!-- Model Selection Guide -->
+        <rect x="25" y="2555" width="500" height="85" rx="6" class="box box-eval"/>
+        <text x="275" y="2580" text-anchor="middle" class="title-md">📋 Chọn model theo lượng dữ liệu</text>
+        <text x="40" y="2605" class="text-normal">• Dưới 2,000 dòng: Logistic Regression, Random Forest (Deep Learning = overfit)</text>
+        <text x="40" y="2623" class="text-normal">• 2,000 - 10,000: XGBoost, LightGBM, CatBoost</text>
+        <text x="40" y="2641" class="text-normal">• 10,000+: Thêm LSTM, GRU, TabNet</text>
+
+        <!-- WHY Box Models -->
+        <rect x="25" y="2650" width="500" height="130" rx="6" class="box box-explain"/>
+        <text x="275" y="2675" text-anchor="middle" class="title-md">💡 TẠI SAO cần các bổ sung này?</text>
+
+        <text x="40" y="2700" class="text-why">✓ Baseline comparison: Không có baseline = không biết ML có thực sự tốt hơn random.</text>
+        <text x="40" y="2718" class="text-why">✓ Probability Calibration: Threshold 60% vô nghĩa nếu xác suất không được calibrate.</text>
+        <text x="40" y="2736" class="text-why">✓ TimeSeriesSplit: CV thông thường = cheating. Model "nhìn thấy" tương lai.</text>
+        <text x="40" y="2754" class="text-why">✓ Early Stopping (LSTM): patience=10, monitor='val_loss' để tránh overfit.</text>
+
+        <!-- Arrow down Pipeline A -->
+        <path d="M270 2795 L270 2850" class="arrow-a" marker-end="url(#arrow-a)"/>
+
+
+        <!-- ==================== PHASE 6A: ENSEMBLE ==================== -->
+        <rect x="0" y="2860" width="540" height="520" class="pipeline-a-bg"/>
+        <text x="270" y="2890" text-anchor="middle" class="phase-label" fill="#1565c0">PHASE 6A: ENSEMBLE (Stacking)</text>
+        <line x1="25" y1="2905" x2="525" y2="2905" class="section-divider"/>
+
+        <!-- Stacking -->
+        <rect x="25" y="2920" width="245" height="200" rx="6" class="box box-ensemble"/>
+        <text x="147" y="2945" text-anchor="middle" class="title-md">🅰️ Stacking 2 Tầng</text>
+
+        <text x="40" y="2970" class="title-sm">Tầng 1 (Base Models):</text>
+        <text x="50" y="2988" class="text-normal">XGBoost, LightGBM, LSTM, CatBoost</text>
+        <text x="50" y="3003" class="text-small">Mỗi model output 3 xác suất</text>
+
+        <text x="40" y="3028" class="title-sm">Tầng 2 (Meta-Learner):</text>
+        <text x="50" y="3046" class="text-highlight">Logistic Regression</text>
+        <text x="50" y="3061" class="text-warn">❌ KHÔNG dùng model phức tạp</text>
+
+        <text x="40" y="3086" class="title-sm">Input cho Meta-Learner:</text>
+        <text x="50" y="3104" class="text-small">4 models × 3 classes = 12 features</text>
+
+        <!-- Model Diversity -->
+        <rect x="280" y="2920" width="245" height="200" rx="6" class="box box-new"/>
+        <rect x="280" y="2920" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="305" y="2932" class="new-badge">MỚI</text>
+        <text x="402" y="2945" text-anchor="middle" class="title-md">🎭 MODEL DIVERSITY</text>
+
+        <text x="295" y="2970" class="title-sm">Vấn đề hiện tại:</text>
+        <text x="295" y="2988" class="text-normal">XGBoost, LightGBM, CatBoost đều là</text>
+        <text x="295" y="3003" class="text-normal">Gradient Boosting → khá giống nhau</text>
+
+        <text x="295" y="3028" class="title-sm">Đề xuất ensemble đa dạng:</text>
+        <text x="305" y="3046" class="text-normal">• 1 Gradient Boosting (XGBoost)</text>
+        <text x="305" y="3061" class="text-normal">• 1 Neural Network (LSTM)</text>
+        <text x="305" y="3076" class="text-normal">• 1 Linear Model (Logistic Reg)</text>
+        <text x="305" y="3091" class="text-normal">• 1 Instance-based (KNN)</text>
+
+        <text x="295" y="3111" class="text-highlight">Đo: Correlation của predictions</text>
+
+        <!-- Disagreement Signal -->
+        <rect x="25" y="3130" width="500" height="110" rx="6" class="box box-new"/>
+        <rect x="25" y="3130" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="50" y="3142" class="new-badge">MỚI</text>
+        <text x="275" y="3155" text-anchor="middle" class="title-md">📊 DISAGREEMENT SIGNAL</text>
+
+        <text x="40" y="3180" class="text-formula">Disagreement = std(P_1, P_2, P_3, P_4)</text>
+        <text x="40" y="3200" class="text-normal">• Disagreement thấp (&lt; 0.1): Models đồng thuận → Tin cậy cao → Size lớn</text>
+        <text x="40" y="3218" class="text-normal">• Disagreement cao (&gt; 0.2): Models bất đồng → Không chắc chắn → Không vào lệnh</text>
+
+        <!-- WHY Ensemble -->
+        <rect x="25" y="3250" width="500" height="90" rx="6" class="box box-explain"/>
+        <text x="275" y="3275" text-anchor="middle" class="title-md">💡 TẠI SAO cần Ensemble?</text>
+        <text x="40" y="3300" class="text-why">✓ Giảm variance: Nếu 1 model sai, các model khác có thể "cứu".</text>
+        <text x="40" y="3318" class="text-why">✓ Đa góc nhìn: XGBoost giỏi kỹ thuật, LSTM giỏi xu hướng → Kết hợp = toàn diện.</text>
+
+        <!-- Arrow down Pipeline A -->
+        <path d="M270 3355 L270 3400" class="arrow-a" marker-end="url(#arrow-a)"/>
+
+
+        <!-- ==================== PHASE 7A: OUTPUT ==================== -->
+        <rect x="0" y="3410" width="540" height="200" class="pipeline-a-bg"/>
+        <text x="270" y="3440" text-anchor="middle" class="phase-label" fill="#1565c0">PHASE 7A: MODEL OUTPUT</text>
+        <line x1="25" y1="3455" x2="525" y2="3455" class="section-divider"/>
+
+        <rect x="25" y="3470" width="500" height="130" rx="6" class="box box-output"/>
+        <text x="275" y="3495" text-anchor="middle" class="title-md">🎯 Output: 3 con số xác suất (CALIBRATED)</text>
+
+        <text x="40" y="3520" class="title-sm">Ví dụ output cho HPG ngày hôm nay:</text>
+        <text x="50" y="3540" class="text-formula">P_thắng = 65% ← Xác suất chạm TP trước</text>
+        <text x="50" y="3558" class="text-formula">P_thua = 15% ← Xác suất chạm SL trước</text>
+        <text x="50" y="3576" class="text-formula">P_hòa = 20% ← Xác suất sideway/timeout</text>
+
+        <text x="300" y="3540" class="title-sm">Thông tin bổ sung:</text>
+        <text x="310" y="3558" class="text-normal">• Disagreement = 0.08 (đồng thuận)</text>
+        <text x="310" y="3576" class="text-normal">• GARCH σ = 2.1%</text>
+
+        <!-- Arrow down Pipeline A -->
+        <path d="M270 3615 L270 3660" class="arrow-a" marker-end="url(#arrow-a)"/>
+
+
+        <!-- ==================== PHASE 8A: DECISION RULE ==================== -->
+        <rect x="0" y="3670" width="540" height="380" class="pipeline-a-bg"/>
+        <text x="270" y="3700" text-anchor="middle" class="phase-label" fill="#1565c0">PHASE 8A: DECISION RULE</text>
+        <line x1="25" y1="3715" x2="525" y2="3715" class="section-divider"/>
+
+        <!-- Threshold -->
+        <rect x="25" y="3730" width="245" height="170" rx="6" class="box box-decision"/>
+        <text x="147" y="3755" text-anchor="middle" class="title-md">🚦 Đặt ngưỡng (Threshold)</text>
+
+        <text x="40" y="3780" class="title-sm">Quy tắc cơ bản:</text>
+        <text x="50" y="3798" class="text-highlight">• MUA nếu P_thắng &gt; 60%</text>
+        <text x="50" y="3816" class="text-highlight">• BÁN nếu P_thua &gt; 60%</text>
+        <text x="50" y="3834" class="text-highlight">• ĐỨNG NGOÀI nếu không đạt</text>
+
+        <text x="40" y="3859" class="text-small">Điều chỉnh theo Calibration Curve:</text>
+        <text x="40" y="3874" class="text-small">Model under-confident → hạ threshold</text>
+        <text x="40" y="3889" class="text-small">Model over-confident → nâng threshold</text>
+
+        <!-- Multi-condition -->
+        <rect x="280" y="3730" width="245" height="170" rx="6" class="box box-new"/>
+        <rect x="280" y="3730" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="305" y="3742" class="new-badge">MỚI</text>
+        <text x="402" y="3755" text-anchor="middle" class="title-md">🔗 MULTI-CONDITION</text>
+
+        <text x="295" y="3780" class="title-sm">Vào lệnh khi TẤT CẢ thỏa:</text>
+        <text x="305" y="3798" class="text-normal">1. P_thắng &gt; 60%</text>
+        <text x="305" y="3816" class="text-normal">2. Disagreement &lt; 0.15</text>
+        <text x="305" y="3834" class="text-normal">3. GARCH σ &lt; 3%</text>
+        <text x="305" y="3852" class="text-normal">4. Regime = "Normal"</text>
+
+        <text x="295" y="3877" class="text-highlight">→ Giảm số lệnh, tăng chất lượng</text>
+
+        <!-- Example -->
+        <rect x="25" y="3910" width="500" height="90" rx="6" class="box box-decision"/>
+        <text x="275" y="3935" text-anchor="middle" class="title-md">📝 Ví dụ áp dụng</text>
+        <text x="40" y="3960" class="text-normal">HPG: P=65%, Disagree=0.08, σ=2.1%, Regime=Normal → Pass tất cả</text>
+        <text x="450" y="3960" class="text-highlight">→ VÀO LỆNH ✓</text>
+        <text x="40" y="3980" class="text-normal">HSG: P=62%, Disagree=0.25 (cao) → Fail điều kiện 2</text>
+        <text x="450" y="3980" class="text-warn">→ ĐỨNG NGOÀI ✗</text>
+
+        <!-- Arrow down Pipeline A -->
+        <path d="M270 4015 L270 4070" class="arrow-a" marker-end="url(#arrow-a)"/>
+
+
+        <!-- ==================== PHASE 9A: RISK MANAGEMENT ==================== -->
+        <rect x="0" y="4080" width="540" height="750" class="pipeline-a-bg"/>
+        <text x="270" y="4110" text-anchor="middle" class="phase-label" fill="#1565c0">PHASE 9A: RISK MANAGEMENT</text>
+        <line x1="25" y1="4125" x2="525" y2="4125" class="section-divider"/>
+
+        <!-- Position Sizing -->
+        <rect x="25" y="4140" width="245" height="230" rx="6" class="box box-risk"/>
+        <rect x="25" y="4140" width="50" height="18" rx="3" fill="#d84315"/>
+        <text x="50" y="4152" class="new-badge">MỚI</text>
+        <text x="147" y="4165" text-anchor="middle" class="title-md">📊 POSITION SIZING</text>
+
+        <text x="40" y="4190" class="title-sm">1. Kelly Criterion:</text>
+        <text x="50" y="4208" class="text-formula">f* = (p×b - q) / b</text>
+        <text x="50" y="4223" class="text-small">p = win rate, b = win/loss ratio</text>
+        <text x="50" y="4238" class="text-warn">⚠️ Dùng Half-Kelly (f*/2)</text>
+
+        <text x="40" y="4263" class="title-sm">2. Volatility Targeting:</text>
+        <text x="50" y="4281" class="text-formula">Size = Target_Vol / GARCH_σ</text>
+        <text x="50" y="4296" class="text-small">VD: Target 10%, σ=2% → Size = 5x</text>
+        <text x="50" y="4311" class="text-small">σ=4% → Size = 2.5x (tự động giảm)</text>
+
+        <text x="40" y="4336" class="title-sm">3. Max Position:</text>
+        <text x="50" y="4354" class="text-normal">Không quá 5% vốn/lệnh</text>
+        <text x="50" y="4369" class="text-normal">Không quá 20% vốn/ngành</text>
+
+        <!-- Transaction Costs -->
+        <rect x="280" y="4140" width="245" height="230" rx="6" class="box box-new"/>
+        <rect x="280" y="4140" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="305" y="4152" class="new-badge">MỚI</text>
+        <text x="402" y="4165" text-anchor="middle" class="title-md">💸 TRANSACTION COSTS</text>
+
+        <text x="295" y="4190" class="title-sm">Chi phí thực tế tại VN:</text>
+        <text x="305" y="4208" class="text-normal">• Phí môi giới: 0.15-0.25%/chiều</text>
+        <text x="305" y="4223" class="text-normal">• Thuế bán: 0.1%</text>
+        <text x="305" y="4238" class="text-normal">• Slippage: ~0.1% (ước tính)</text>
+
+        <text x="295" y="4263" class="title-sm">Tổng chi phí mỗi trade:</text>
+        <text x="305" y="4281" class="text-highlight">~0.5% - 0.7% round-trip</text>
+
+        <text x="295" y="4306" class="title-sm">Impact lên strategy:</text>
+        <text x="305" y="4324" class="text-normal">TP = 4%, Chi phí = 0.6%</text>
+        <text x="305" y="4339" class="text-normal">→ Lợi nhuận thực = 3.4%</text>
+        <text x="305" y="4354" class="text-warn">→ Chi phí "ăn" 15% lợi nhuận!</text>
+
+        <!-- Regime Detection -->
+        <rect x="25" y="4380" width="245" height="195" rx="6" class="box box-regime"/>
+        <rect x="25" y="4380" width="50" height="18" rx="3" fill="#0277bd"/>
+        <text x="50" y="4392" class="new-badge">MỚI</text>
+        <text x="147" y="4405" text-anchor="middle" class="title-md">🌡️ REGIME DETECTION</text>
+
+        <text x="40" y="4430" class="title-sm">Các Regime thị trường:</text>
+        <text x="50" y="4448" class="text-normal">• Bull: VNINDEX &gt; MA50</text>
+        <text x="50" y="4463" class="text-normal">• Bear: VNINDEX &lt; MA50</text>
+        <text x="50" y="4478" class="text-normal">• High Vol: σ &gt; 2×average</text>
+        <text x="50" y="4493" class="text-warn">• Crisis: Drawdown &gt; 15%</text>
+
+        <text x="40" y="4518" class="title-sm">Ứng dụng:</text>
+        <text x="50" y="4536" class="text-warn">Crisis → DỪNG trading hoàn toàn</text>
+        <text x="50" y="4551" class="text-normal">High Vol → Giảm size 50%</text>
+        <text x="50" y="4566" class="text-normal">Bear → Chỉ trade ngưỡng &gt; 70%</text>
+
+        <!-- Drawdown Control -->
+        <rect x="280" y="4380" width="245" height="195" rx="6" class="box box-risk"/>
+        <rect x="280" y="4380" width="50" height="18" rx="3" fill="#d84315"/>
+        <text x="305" y="4392" class="new-badge">MỚI</text>
+        <text x="402" y="4405" text-anchor="middle" class="title-md">📉 DRAWDOWN CONTROL</text>
+
+        <text x="295" y="4430" class="title-sm">Daily Loss Limit:</text>
+        <text x="305" y="4448" class="text-normal">Lỗ &gt; 2% vốn trong ngày</text>
+        <text x="305" y="4463" class="text-normal">→ Dừng trading hôm đó</text>
+
+        <text x="295" y="4488" class="title-sm">Weekly Loss Limit:</text>
+        <text x="305" y="4506" class="text-normal">Lỗ &gt; 5% vốn trong tuần</text>
+        <text x="305" y="4521" class="text-normal">→ Dừng trading cả tuần</text>
+
+        <text x="295" y="4546" class="title-sm">Circuit Breaker:</text>
+        <text x="305" y="4564" class="text-warn">Drawdown &gt; 15% từ đỉnh</text>
+        <text x="305" y="4579" class="text-warn">→ DỪNG HOÀN TOÀN, review model</text>
+
+        <!-- Model Monitoring -->
+        <rect x="25" y="4585" width="500" height="100" rx="6" class="box box-new"/>
+        <rect x="25" y="4585" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="50" y="4597" class="new-badge">MỚI</text>
+        <text x="275" y="4610" text-anchor="middle" class="title-md">🔍 MODEL MONITORING</text>
+
+        <text x="40" y="4635" class="title-sm">Performance Decay Detection:</text>
+        <text x="50" y="4653" class="text-normal">• Rolling win rate (30 ngày): &lt; 45% → Cảnh báo</text>
+        <text x="40" y="4673" class="title-sm">Concept Drift:</text>
+        <text x="50" y="4691" class="text-normal">• PSI (Population Stability Index): &gt; 0.2 → Retrain</text>
+        <text x="300" y="4673" class="title-sm">Retrain Schedule:</text>
+        <text x="310" y="4691" class="text-highlight">Hàng tháng hoặc khi PSI trigger</text>
+
+        <!-- WHY Risk Management -->
+        <rect x="25" y="4695" width="500" height="100" rx="6" class="box box-explain"/>
+        <text x="275" y="4720" text-anchor="middle" class="title-md">💡 TẠI SAO Risk Management quan trọng nhất?</text>
+        <text x="40" y="4745" class="text-why">✓ Model tốt + Risk kém = Phá sản. Chuỗi thua 10 lệnh liên tiếp hoàn toàn có thể xảy ra.</text>
+        <text x="40" y="4763" class="text-why">✓ Transaction costs bị bỏ qua = Lợi nhuận ảo. Backtest đẹp nhưng live lỗ vì không tính phí.</text>
+        <text x="40" y="4781" class="text-why">✓ Regime thay đổi: Model train trên Bull sẽ fail khi Bear. Cần biết khi nào KHÔNG trade.</text>
+
+        <!-- Arrow down Pipeline A -->
+        <path d="M270 4810 L270 4865" class="arrow-a" marker-end="url(#arrow-a)"/>
+
+
+        <!-- ==================== PHASE 10A: EXECUTION ==================== -->
+        <rect x="0" y="4875" width="540" height="420" class="pipeline-a-bg"/>
+        <text x="270" y="4905" text-anchor="middle" class="phase-label" fill="#1565c0">PHASE 10A: EXECUTION</text>
+        <line x1="25" y1="4920" x2="525" y2="4920" class="section-divider"/>
+
+        <!-- Order Setup -->
+        <rect x="25" y="4935" width="245" height="200" rx="6" class="box box-execute"/>
+        <text x="147" y="4960" text-anchor="middle" class="title-md">📝 Tính toán Lệnh</text>
+
+        <text x="40" y="4985" class="title-sm">Dữ liệu từ Triple Barrier:</text>
+        <text x="50" y="5003" class="text-normal">• Giá hiện tại: 28,000 VND</text>
+        <text x="50" y="5018" class="text-normal">• GARCH σ: 2.1%</text>
+        <text x="50" y="5033" class="text-normal">• Hệ số k: 3</text>
+
+        <text x="40" y="5058" class="title-sm">Tính biên độ:</text>
+        <text x="50" y="5076" class="text-formula">Δ = 28,000 × 2.1% × 2 = 1,176</text>
+
+        <text x="40" y="5101" class="title-sm">Position Size:</text>
+        <text x="50" y="5119" class="text-small">Vốn = 100M, Risk = 2%</text>
+        <text x="50" y="5134" class="text-formula">Size = 2M / (4.2% × 28K) ≈ 1,700cp</text>
+
+        <!-- TP/SL -->
+        <rect x="280" y="4935" width="245" height="200" rx="6" class="box box-execute"/>
+        <text x="402" y="4960" text-anchor="middle" class="title-md">🎯 Đặt lệnh TP/SL</text>
+
+        <text x="295" y="4985" class="title-sm">1. Lệnh MUA (Entry):</text>
+        <text x="305" y="5003" class="text-highlight">MUA HPG 1,700 cp @ 28,000</text>
+
+        <text x="295" y="5028" class="title-sm">2. Take Profit:</text>
+        <text x="305" y="5046" class="text-formula">TP = 28,000 + 1,176 = 29,176</text>
+        <text x="305" y="5061" class="text-small">Làm tròn: 29,150 VND</text>
+
+        <text x="295" y="5086" class="title-sm">3. Stop Loss:</text>
+        <text x="305" y="5104" class="text-formula">SL = 28,000 - 1,176 = 26,824</text>
+        <text x="305" y="5119" class="text-small">Làm tròn: 26,850 VND</text>
+
+        <!-- Exit Rules -->
+        <rect x="25" y="5145" width="500" height="140" rx="6" class="box box-execute"/>
+        <text x="275" y="5170" text-anchor="middle" class="title-md">🚪 Quy tắc thoát lệnh</text>
+
+        <text x="40" y="5195" class="title-sm">Ưu tiên 1: TP/SL tự động</text>
+        <text x="50" y="5213" class="text-normal">Chạm 29,150 → Bán chốt lời | Chạm 26,850 → Bán cắt lỗ</text>
+
+        <text x="40" y="5238" class="title-sm">Ưu tiên 2: Time Exit</text>
+        <text x="50" y="5256" class="text-normal">Hết 20 ngày → Đóng theo giá thị trường</text>
+
+        <text x="300" y="5195" class="title-sm">Ưu tiên 3: Emergency Exit</text>
+        <text x="310" y="5213" class="text-warn">Daily loss &gt; 2% → Đóng tất cả</text>
+        <text x="310" y="5228" class="text-warn">Regime = Crisis → Đóng tất cả</text>
+
+        <text x="40" y="5278" class="text-highlight">⏰ Tần suất: 2 lần/tuần (Thứ 3, Thứ 6 sau 15:00)</text>
+
+
+        <!-- ===================================================================================== -->
+        <!-- ==================== PIPELINE B: INVESTMENT (RIGHT SIDE) ==================== -->
+        <!-- ===================================================================================== -->
+
+        <!-- ==================== PHASE 4B: RETURN LABELING ==================== -->
+        <rect x="560" y="1270" width="540" height="700" class="pipeline-b-bg"/>
+        <text x="830" y="1300" text-anchor="middle" class="phase-label" fill="#ad1457">PHASE 4B: RETURN LABELING</text>
+        <line x1="575" y1="1315" x2="1085" y2="1315" class="section-divider"/>
+
+        <!-- What is different -->
+        <rect x="575" y="1330" width="500" height="175" rx="6" class="box box-regression"/>
+        <text x="825" y="1355" text-anchor="middle" class="title-md">📊 Continuous Return Target</text>
+
+        <text x="590" y="1380" class="title-sm">Target Variable:</text>
+        <text x="600" y="1398" class="text-formula">y = Forward Return (1M / 2M / 3M)</text>
+        <text x="590" y="1423" class="text-normal">Hoặc để giảm outliers:</text>
+        <text x="600" y="1441" class="text-formula">y = log(1 + return)</text>
+
+        <text x="590" y="1471" class="title-sm">Khác với Trading:</text>
+        <text x="600" y="1489" class="text-normal">Cần biết MỨC ĐỘ return, không chỉ hướng tăng/giảm</text>
+
+        <text x="830" y="1380" class="title-sm">Tại sao không dùng Triple Barrier?</text>
+        <text x="840" y="1398" class="text-small">• Investment không cần TP/SL cố định</text>
+        <text x="840" y="1413" class="text-small">• Cần ranking để chọn Top N stocks</text>
+        <text x="840" y="1428" class="text-small">• Allocation cần con số cụ thể</text>
+
+        <!-- Features for Investment -->
+        <rect x="575" y="1515" width="500" height="175" rx="6" class="box box-regression"/>
+        <text x="825" y="1540" text-anchor="middle" class="title-md">🎯 Features thiên Fundamentals</text>
+
+        <text x="590" y="1565" class="title-sm">Valuation Ratios:</text>
+        <text x="600" y="1583" class="text-normal">• P/E, P/B, EV/EBITDA</text>
+        <text x="600" y="1598" class="text-normal">• Dividend Yield</text>
+
+        <text x="590" y="1623" class="title-sm">Profitability:</text>
+        <text x="600" y="1641" class="text-normal">• ROE, ROA, ROIC</text>
+        <text x="600" y="1656" class="text-normal">• Profit Margin</text>
+
+        <text x="830" y="1565" class="title-sm">Growth:</text>
+        <text x="840" y="1583" class="text-normal">• Revenue Growth</text>
+        <text x="840" y="1598" class="text-normal">• Earnings Growth</text>
+
+        <text x="830" y="1623" class="title-sm">Quality:</text>
+        <text x="840" y="1641" class="text-normal">• Debt/Equity</text>
+        <text x="840" y="1656" class="text-normal">• Current Ratio</text>
+
+        <text x="590" y="1681" class="text-highlight">Fundamentals quan trọng hơn cho trung hạn (1-3 tháng)</text>
+
+        <!-- WHY Box -->
+        <rect x="575" y="1700" width="500" height="120" rx="6" class="box box-explain"/>
+        <text x="825" y="1725" text-anchor="middle" class="title-md">💡 TẠI SAO cần Regression cho Đầu tư?</text>
+
+        <text x="590" y="1750" class="text-why">✓ Allocation cần con số cụ thể: "HPG tốt hơn HSG" không đủ. Cần biết "tốt hơn BAO NHIÊU".</text>
+        <text x="590" y="1768" class="text-why">✓ Portfolio construction: HPG E[R]=15%, HSG E[R]=8% → Phân bổ vốn khác nhau.</text>
+        <text x="590" y="1786" class="text-why">✓ Risk-adjusted ranking: Return cao + Vol cao có thể không đáng. Cần Sharpe để so sánh.</text>
+        <text x="590" y="1804" class="text-why">✓ Downside protection: Quantile regression cho biết "worst case" là gì.</text>
+
+        <!-- Example -->
+        <rect x="575" y="1830" width="500" height="90" rx="6" class="box box-regression"/>
+        <text x="825" y="1855" text-anchor="middle" class="title-md">📝 Ví dụ: Dự đoán 3-month return</text>
+        <text x="590" y="1880" class="text-normal">HPG: E[R] = +12%, σ = 25%, Sharpe = 0.48</text>
+        <text x="590" y="1898" class="text-normal">HSG: E[R] = +8%, σ = 30%, Sharpe = 0.27</text>
+        <text x="590" y="1916" class="text-highlight">→ HPG có Sharpe cao hơn → Allocate nhiều vốn hơn</text>
+
+        <!-- Arrow down Pipeline B -->
+        <path d="M830 1935 L830 1980" class="arrow-b" marker-end="url(#arrow-b)"/>
+
+
+        <!-- ==================== PHASE 5B: REGRESSION MODELS ==================== -->
+        <rect x="560" y="1990" width="540" height="850" class="pipeline-b-bg"/>
+        <text x="830" y="2020" text-anchor="middle" class="phase-label" fill="#ad1457">PHASE 5B: REGRESSION MODELS</text>
+        <line x1="575" y1="2035" x2="1085" y2="2035" class="section-divider"/>
+
+        <!-- Main Models -->
+        <rect x="575" y="2050" width="245" height="180" rx="6" class="box box-regression"/>
+        <text x="697" y="2075" text-anchor="middle" class="title-md">📈 MAIN MODELS</text>
+
+        <text x="590" y="2100" class="title-sm">Return Prediction:</text>
+        <text x="600" y="2118" class="text-normal">• XGBoost Regressor</text>
+        <text x="600" y="2133" class="text-normal">• Ridge / ElasticNet</text>
+        <text x="600" y="2148" class="text-normal">• LASSO</text>
+
+        <text x="590" y="2173" class="title-sm">Volatility Prediction:</text>
+        <text x="600" y="2191" class="text-normal">• GARCH / HAR-RV</text>
+
+        <text x="590" y="2216" class="title-sm">Output:</text>
+        <text x="600" y="2234" class="text-highlight">E[Return], σ, VaR</text>
+
+        <!-- Loss Function -->
+        <rect x="830" y="2050" width="245" height="180" rx="6" class="box box-new"/>
+        <rect x="830" y="2050" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="855" y="2062" class="new-badge">MỚI</text>
+        <text x="952" y="2075" text-anchor="middle" class="title-md">⚠️ LOSS FUNCTION</text>
+
+        <text x="845" y="2100" class="title-sm">KHÔNG dùng MSE:</text>
+        <text x="855" y="2118" class="text-warn">MSE sensitive to outliers</text>
+        <text x="855" y="2133" class="text-small">Một ngày -15% phá hỏng model</text>
+
+        <text x="845" y="2158" class="title-sm">Nên dùng:</text>
+        <text x="855" y="2176" class="text-highlight">• Huber Loss (robust)</text>
+        <text x="855" y="2191" class="text-highlight">• Quantile Loss</text>
+
+        <text x="845" y="2216" class="title-sm">Target Transformation:</text>
+        <text x="855" y="2234" class="text-formula">y = log(1 + return)</text>
+
+        <!-- Quantile Regression -->
+        <rect x="575" y="2240" width="500" height="180" rx="6" class="box box-regression"/>
+        <rect x="575" y="2240" width="50" height="18" rx="3" fill="#512da8"/>
+        <text x="600" y="2252" class="new-badge">MỚI</text>
+        <text x="825" y="2265" text-anchor="middle" class="title-md">📉 QUANTILE REGRESSION (VaR)</text>
+
+        <text x="590" y="2290" class="title-sm">Dự đoán VaR (Value at Risk):</text>
+        <text x="600" y="2308" class="text-formula">Q_5% = Quantile Regression(τ=0.05)</text>
+        <text x="600" y="2326" class="text-small">"Trong 95% trường hợp, lỗ không quá Q_5%"</text>
+
+        <text x="590" y="2351" class="title-sm">Dự đoán khoảng tin cậy:</text>
+        <text x="600" y="2369" class="text-formula">Q_10% đến Q_90% → 80% Confidence Interval</text>
+
+        <text x="590" y="2394" class="title-sm">Ứng dụng:</text>
+        <text x="600" y="2412" class="text-normal">• Tránh stocks có VaR quá thấp (tail risk cao)</text>
+        <text x="600" y="2427" class="text-normal">• Loại stocks có interval quá rộng (uncertainty cao)</text>
+
+        <text x="830" y="2290" class="title-sm">Các quantiles thường dùng:</text>
+        <text x="840" y="2308" class="text-normal">Q_5% → VaR (downside)</text>
+        <text x="840" y="2326" class="text-normal">Q_50% → Median prediction</text>
+        <text x="840" y="2344" class="text-normal">Q_95% → Upside potential</text>
+
+        <text x="830" y="2369" class="title-sm">Thư viện Python:</text>
+        <text x="840" y="2387" class="text-highlight">statsmodels, sklearn</text>
+
+        <!-- Hyperparameter Tuning -->
+        <rect x="575" y="2430" width="500" height="120" rx="6" class="box box-new"/>
+        <rect x="575" y="2430" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="600" y="2442" class="new-badge">MỚI</text>
+        <text x="825" y="2455" text-anchor="middle" class="title-md">🎛️ HYPERPARAMETER TUNING (Regression)</text>
+
+        <text x="590" y="2480" class="text-normal">Phương pháp tương tự Classification: Bayesian Optimization (Optuna)</text>
+        <text x="590" y="2498" class="text-highlight">⚠️ Validation: TimeSeriesSplit hoặc Expanding Window</text>
+        <text x="590" y="2516" class="text-normal">Metrics: MAE, RMSE, R², hoặc custom metric (Sharpe của predictions)</text>
+        <text x="590" y="2534" class="text-warn">❌ KHÔNG dùng K-Fold thường (data leakage)</text>
+
+        <!-- Model Selection Guide -->
+        <rect x="575" y="2560" width="500" height="85" rx="6" class="box box-eval"/>
+        <text x="825" y="2585" text-anchor="middle" class="title-md">📋 Chọn model theo mục đích</text>
+        <text x="590" y="2610" class="text-normal">• Return prediction: XGBoost Regressor, Ridge, ElasticNet</text>
+        <text x="590" y="2628" class="text-normal">• Volatility prediction: GARCH, HAR-RV</text>
+        <text x="590" y="2646" class="text-normal">• Downside risk: Quantile Regression</text>
+
+        <!-- WHY Box Models -->
+        <rect x="575" y="2655" width="500" height="125" rx="6" class="box box-explain"/>
+        <text x="825" y="2680" text-anchor="middle" class="title-md">💡 TẠI SAO Regression khó hơn Classification?</text>
+
+        <text x="590" y="2705" class="text-why">✓ Cần dự đoán đúng cả HƯỚNG lẫn ĐỘ LỚN (thay vì chỉ hướng).</text>
+        <text x="590" y="2723" class="text-why">✓ Outliers ảnh hưởng mạnh: Một ngày -15% có thể phá hỏng toàn bộ model.</text>
+        <text x="590" y="2741" class="text-why">✓ R² thấp là bình thường: Thị trường có noise cao, R² = 0.1-0.2 đã tốt.</text>
+        <text x="590" y="2759" class="text-why">✓ Đừng kỳ vọng quá cao: Dự đoán đúng hướng 55-60% đã có alpha.</text>
+
+        <!-- Arrow down Pipeline B -->
+        <path d="M830 2795 L830 2850" class="arrow-b" marker-end="url(#arrow-b)"/>
+
+
+        <!-- ==================== PHASE 6B: ENSEMBLE ==================== -->
+        <rect x="560" y="2860" width="540" height="520" class="pipeline-b-bg"/>
+        <text x="830" y="2890" text-anchor="middle" class="phase-label" fill="#ad1457">PHASE 6B: ENSEMBLE (Averaging)</text>
+        <line x1="575" y1="2905" x2="1085" y2="2905" class="section-divider"/>
+
+        <!-- Simple/Weighted Averaging -->
+        <rect x="575" y="2920" width="245" height="200" rx="6" class="box box-ensemble"/>
+        <text x="697" y="2945" text-anchor="middle" class="title-md">🅱️ Averaging Methods</text>
+
+        <text x="590" y="2970" class="title-sm">Simple Averaging:</text>
+        <text x="600" y="2988" class="text-formula">Ŷ = mean(Ŷ_XGB, Ŷ_Ridge, ...)</text>
+        <text x="600" y="3003" class="text-small">Đơn giản, hiệu quả</text>
+
+        <text x="590" y="3028" class="title-sm">Weighted Averaging:</text>
+        <text x="600" y="3046" class="text-formula">Ŷ = Σ(w_i × Ŷ_i)</text>
+        <text x="600" y="3061" class="text-small">Trọng số theo validation R²</text>
+        <text x="600" y="3076" class="text-small">hoặc theo out-of-sample MAE</text>
+
+        <text x="590" y="3101" class="title-sm">Regression không cần Stacking:</text>
+        <text x="600" y="3119" class="text-small">Averaging đã đủ tốt cho regression</text>
+
+        <!-- Prediction Interval -->
+        <rect x="830" y="2920" width="245" height="200" rx="6" class="box box-regression"/>
+        <text x="952" y="2945" text-anchor="middle" class="title-md">📏 Prediction Interval</text>
+
+        <text x="845" y="2970" class="title-sm">Kết hợp Quantile Regression:</text>
+        <text x="855" y="2988" class="text-formula">Lower = Q_10%</text>
+        <text x="855" y="3006" class="text-formula">Point = Q_50% (median)</text>
+        <text x="855" y="3024" class="text-formula">Upper = Q_90%</text>
+
+        <text x="845" y="3049" class="title-sm">Đo uncertainty:</text>
+        <text x="855" y="3067" class="text-normal">Interval rộng = không chắc chắn</text>
+        <text x="855" y="3082" class="text-normal">Interval hẹp = tin cậy cao</text>
+
+        <text x="845" y="3107" class="text-highlight">Dùng để filter stocks</text>
+
+        <!-- Ensemble WHY -->
+        <rect x="575" y="3130" width="500" height="110" rx="6" class="box box-explain"/>
+        <text x="825" y="3155" text-anchor="middle" class="title-md">💡 TẠI SAO Ensemble cho Regression đơn giản hơn?</text>
+
+        <text x="590" y="3180" class="text-why">✓ Regression output là continuous → Averaging hoạt động tự nhiên.</text>
+        <text x="590" y="3198" class="text-why">✓ Không cần calibrate như probability → Ít bước hơn.</text>
+        <text x="590" y="3216" class="text-why">✓ Focus vào reducing variance hơn là combining diverse views.</text>
+
+        <!-- Output -->
+        <rect x="575" y="3250" width="500" height="90" rx="6" class="box box-output"/>
+        <text x="825" y="3275" text-anchor="middle" class="title-md">🎯 Output sau Ensemble</text>
+
+        <text x="590" y="3300" class="title-sm">Ví dụ HPG:</text>
+        <text x="600" y="3318" class="text-normal">E[R] = +12% [8% - 16%] | σ = 25% | Sharpe = 0.48 | VaR_5% = -8%</text>
+
+        <!-- Arrow down Pipeline B -->
+        <path d="M830 3355 L830 3400" class="arrow-b" marker-end="url(#arrow-b)"/>
+
+
+        <!-- ==================== PHASE 7B: OUTPUT ==================== -->
+        <rect x="560" y="3410" width="540" height="200" class="pipeline-b-bg"/>
+        <text x="830" y="3440" text-anchor="middle" class="phase-label" fill="#ad1457">PHASE 7B: MODEL OUTPUT</text>
+        <line x1="575" y1="3455" x2="1085" y2="3455" class="section-divider"/>
+
+        <rect x="575" y="3470" width="500" height="130" rx="6" class="box box-output"/>
+        <text x="825" y="3495" text-anchor="middle" class="title-md">🎯 Output: Expected Return + Uncertainty</text>
+
+        <text x="590" y="3520" class="title-sm">Cho mỗi cổ phiếu:</text>
+        <text x="600" y="3540" class="text-formula">E[Return] = +12% (point estimate)</text>
+        <text x="600" y="3558" class="text-formula">Prediction Interval = [8%, 16%]</text>
+        <text x="600" y="3576" class="text-formula">Volatility σ = 25%</text>
+
+        <text x="830" y="3520" class="title-sm">Derived metrics:</text>
+        <text x="840" y="3540" class="text-formula">Sharpe = (E[R] - Rf) / σ</text>
+        <text x="840" y="3558" class="text-formula">VaR_5% = Q_5% = -8%</text>
+        <text x="840" y="3576" class="text-normal">Uncertainty = Width of interval</text>
+
+        <!-- Arrow down Pipeline B -->
+        <path d="M830 3615 L830 3660" class="arrow-b" marker-end="url(#arrow-b)"/>
+
+
+        <!-- ==================== PHASE 8B: RANKING & SCORING ==================== -->
+        <rect x="560" y="3670" width="540" height="380" class="pipeline-b-bg"/>
+        <text x="830" y="3700" text-anchor="middle" class="phase-label" fill="#ad1457">PHASE 8B: RANKING & SCORING</text>
+        <line x1="575" y1="3715" x2="1085" y2="3715" class="section-divider"/>
+
+        <!-- Sharpe Ranking -->
+        <rect x="575" y="3730" width="245" height="170" rx="6" class="box box-decision"/>
+        <text x="697" y="3755" text-anchor="middle" class="title-md">📊 Tính Sharpe Ratio</text>
+
+        <text x="590" y="3780" class="title-sm">Công thức:</text>
+        <text x="600" y="3798" class="text-formula">Sharpe_i = (E[R_i] - Rf) / σ_i</text>
+        <text x="600" y="3816" class="text-small">E[R_i] từ Regression</text>
+        <text x="600" y="3831" class="text-small">σ_i từ GARCH</text>
+
+        <text x="590" y="3856" class="title-sm">Ranking:</text>
+        <text x="600" y="3874" class="text-highlight">Rank từ cao → thấp</text>
+        <text x="600" y="3892" class="text-normal">Chọn Top N (VD: Top 5-10)</text>
+
+        <!-- Filter -->
+        <rect x="830" y="3730" width="245" height="170" rx="6" class="box box-new"/>
+        <rect x="830" y="3730" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="855" y="3742" class="new-badge">MỚI</text>
+        <text x="952" y="3755" text-anchor="middle" class="title-md">🔍 FILTER bổ sung</text>
+
+        <text x="845" y="3780" class="title-sm">Loại stocks có:</text>
+        <text x="855" y="3798" class="text-warn">• VaR (Q_5%) quá thấp</text>
+        <text x="865" y="3813" class="text-small">(tail risk cao)</text>
+
+        <text x="855" y="3833" class="text-warn">• Prediction interval quá rộng</text>
+        <text x="865" y="3848" class="text-small">(uncertainty cao)</text>
+
+        <text x="855" y="3873" class="text-warn">• Fundamental yếu</text>
+        <text x="865" y="3888" class="text-small">(Debt/Equity cao, ROE thấp)</text>
+
+        <!-- Example -->
+        <rect x="575" y="3910" width="500" height="90" rx="6" class="box box-decision"/>
+        <text x="825" y="3935" text-anchor="middle" class="title-md">📝 Ví dụ Ranking 5 stocks ngành thép</text>
+        <text x="590" y="3960" class="text-small">HPG: Sharpe=0.48, VaR=-8% → Rank 1 ✓ | HSG: Sharpe=0.27, VaR=-12% → Rank 3 | NKG: Sharpe=0.35, VaR=-15% → Loại (VaR quá thấp)</text>
+        <text x="590" y="3980" class="text-highlight">→ Chọn Top 3-5 stocks có Sharpe cao nhất VÀ pass filters</text>
+
+        <!-- Arrow down Pipeline B -->
+        <path d="M830 4015 L830 4070" class="arrow-b" marker-end="url(#arrow-b)"/>
+
+
+        <!-- ==================== PHASE 9B: PORTFOLIO OPTIMIZATION ==================== -->
+        <rect x="560" y="4080" width="540" height="750" class="pipeline-b-bg"/>
+        <text x="830" y="4110" text-anchor="middle" class="phase-label" fill="#ad1457">PHASE 9B: PORTFOLIO OPTIMIZATION</text>
+        <line x1="575" y1="4125" x2="1085" y2="4125" class="section-divider"/>
+
+        <!-- Mean-Variance -->
+        <rect x="575" y="4140" width="245" height="230" rx="6" class="box box-regression"/>
+        <text x="697" y="4165" text-anchor="middle" class="title-md">📊 MEAN-VARIANCE</text>
+
+        <text x="590" y="4190" class="title-sm">Objective:</text>
+        <text x="600" y="4208" class="text-formula">max: w'μ - λ × w'Σw</text>
+
+        <text x="590" y="4233" class="title-sm">Constraints:</text>
+        <text x="600" y="4251" class="text-formula">Σw = 1 (full invested)</text>
+        <text x="600" y="4269" class="text-formula">w ≥ 0 (no short selling)</text>
+
+        <text x="590" y="4294" class="title-sm">Inputs:</text>
+        <text x="600" y="4312" class="text-normal">μ = vector Expected Returns</text>
+        <text x="600" y="4327" class="text-normal">Σ = Covariance matrix</text>
+        <text x="600" y="4342" class="text-normal">λ = Risk aversion parameter</text>
+
+        <text x="590" y="4367" class="text-highlight">Thư viện: cvxpy, scipy</text>
+
+        <!-- Risk Parity -->
+        <rect x="830" y="4140" width="245" height="230" rx="6" class="box box-regression"/>
+        <text x="952" y="4165" text-anchor="middle" class="title-md">⚖️ RISK PARITY</text>
+
+        <text x="845" y="4190" class="title-sm">Ý tưởng:</text>
+        <text x="855" y="4208" class="text-normal">Allocate sao cho mỗi stock</text>
+        <text x="855" y="4223" class="text-normal">đóng góp rủi ro BẰNG NHAU</text>
+
+        <text x="845" y="4248" class="title-sm">Risk Contribution:</text>
+        <text x="855" y="4266" class="text-formula">RC_i = w_i × (Σw)_i / σ_p</text>
+
+        <text x="845" y="4291" class="title-sm">Ưu điểm:</text>
+        <text x="855" y="4309" class="text-normal">• Đơn giản hơn MVO</text>
+        <text x="855" y="4324" class="text-normal">• Robust với estimation error</text>
+        <text x="855" y="4339" class="text-normal">• Không cần dự đoán return</text>
+
+        <text x="845" y="4364" class="text-highlight">Thư viện: riskfolio-lib</text>
+
+        <!-- Constraints -->
+        <rect x="575" y="4380" width="500" height="170" rx="6" class="box box-new"/>
+        <rect x="575" y="4380" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="600" y="4392" class="new-badge">MỚI</text>
+        <text x="825" y="4405" text-anchor="middle" class="title-md">🔒 CONSTRAINTS thực tế</text>
+
+        <text x="590" y="4430" class="title-sm">Position Limits:</text>
+        <text x="600" y="4448" class="text-normal">• Max 20% vốn / cổ phiếu</text>
+        <text x="600" y="4463" class="text-normal">• Max 40% vốn / ngành</text>
+        <text x="600" y="4478" class="text-normal">• Min 5 cổ phiếu (đa dạng hóa)</text>
+
+        <text x="830" y="4430" class="title-sm">Turnover Constraint:</text>
+        <text x="840" y="4448" class="text-normal">• Max thay đổi 30%/tháng</text>
+        <text x="840" y="4463" class="text-small">(Tránh trade quá nhiều)</text>
+
+        <text x="830" y="4488" class="title-sm">Transaction Cost Aware:</text>
+        <text x="840" y="4506" class="text-normal">• Include costs trong objective</text>
+
+        <text x="590" y="4533" class="text-highlight">Chỉ rebalance nếu: Lợi ích &gt; Transaction costs</text>
+
+        <!-- WHY Portfolio Optimization -->
+        <rect x="575" y="4560" width="500" height="130" rx="6" class="box box-explain"/>
+        <text x="825" y="4585" text-anchor="middle" class="title-md">💡 TẠI SAO cần Portfolio Optimization?</text>
+
+        <text x="590" y="4610" class="text-why">✓ Không chỉ chọn Top N, mà còn phải phân bổ VỐN hợp lý.</text>
+        <text x="590" y="4628" class="text-why">✓ Stock có Sharpe cao nhưng correlation cao với portfolio → nên giảm weight.</text>
+        <text x="590" y="4646" class="text-why">✓ Diversification benefit: Cả portfolio có risk/return tốt hơn từng stock riêng lẻ.</text>
+        <text x="590" y="4664" class="text-why">✓ Transaction cost aware: Không rebalance khi cost &gt; benefit.</text>
+
+        <!-- Model Monitoring -->
+        <rect x="575" y="4700" width="500" height="100" rx="6" class="box box-new"/>
+        <rect x="575" y="4700" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="600" y="4712" class="new-badge">MỚI</text>
+        <text x="825" y="4725" text-anchor="middle" class="title-md">🔍 PORTFOLIO MONITORING</text>
+
+        <text x="590" y="4750" class="text-normal">• Theo dõi portfolio return vs benchmark (VNINDEX, VN30)</text>
+        <text x="590" y="4768" class="text-normal">• Tracking Error, Information Ratio</text>
+        <text x="590" y="4786" class="text-normal">• Nếu underperform liên tục 6 tháng → Review model assumptions</text>
+
+        <!-- Arrow down Pipeline B -->
+        <path d="M830 4810 L830 4865" class="arrow-b" marker-end="url(#arrow-b)"/>
+
+
+        <!-- ==================== PHASE 10B: REBALANCING ==================== -->
+        <rect x="560" y="4875" width="540" height="420" class="pipeline-b-bg"/>
+        <text x="830" y="4905" text-anchor="middle" class="phase-label" fill="#ad1457">PHASE 10B: REBALANCING</text>
+        <line x1="575" y1="4920" x2="1085" y2="4920" class="section-divider"/>
+
+        <!-- Trigger Rebalance -->
+        <rect x="575" y="4935" width="245" height="200" rx="6" class="box box-execute"/>
+        <text x="697" y="4960" text-anchor="middle" class="title-md">🔄 Trigger Rebalance</text>
+
+        <text x="590" y="4985" class="title-sm">Định kỳ:</text>
+        <text x="600" y="5003" class="text-normal">Hàng tháng</text>
+
+        <text x="590" y="5028" class="title-sm">Event-based:</text>
+        <text x="600" y="5046" class="text-normal">• Drift &gt; 5% so với target</text>
+        <text x="600" y="5061" class="text-normal">• Stock mới lọt Top N</text>
+        <text x="600" y="5076" class="text-normal">• Stock hiện tại bị loại</text>
+        <text x="600" y="5091" class="text-normal">• Regime thay đổi</text>
+
+        <text x="590" y="5116" class="title-sm">Cost-aware:</text>
+        <text x="600" y="5134" class="text-highlight">Chỉ rebalance nếu lợi ích &gt; phí</text>
+
+        <!-- Threshold Trading -->
+        <rect x="830" y="4935" width="245" height="200" rx="6" class="box box-new"/>
+        <rect x="830" y="4935" width="50" height="18" rx="3" fill="#e65100"/>
+        <text x="855" y="4947" class="new-badge">MỚI</text>
+        <text x="952" y="4960" text-anchor="middle" class="title-md">🎯 THRESHOLD TRADING</text>
+
+        <text x="845" y="4985" class="title-sm">Chỉ trade nếu:</text>
+        <text x="855" y="5003" class="text-formula">|actual - target| &gt; 3%</text>
+
+        <text x="845" y="5028" class="title-sm">Ví dụ:</text>
+        <text x="855" y="5046" class="text-small">HPG target = 20%, actual = 22%</text>
+        <text x="855" y="5061" class="text-small">Drift = 2% &lt; 3% → Không trade</text>
+
+        <text x="855" y="5081" class="text-small">HSG target = 15%, actual = 10%</text>
+        <text x="855" y="5096" class="text-small">Drift = 5% &gt; 3% → Trade</text>
+
+        <text x="845" y="5121" class="text-highlight">Tránh trade quá nhiều</text>
+        <text x="845" y="5136" class="text-small">khi chỉ lệch nhỏ</text>
+
+        <!-- Execution -->
+        <rect x="575" y="5145" width="500" height="140" rx="6" class="box box-execute"/>
+        <text x="825" y="5170" text-anchor="middle" class="title-md">📝 Execution Flow</text>
+
+        <text x="590" y="5195" class="title-sm">1. Chạy lại Regression models (cuối tháng)</text>
+        <text x="590" y="5213" class="title-sm">2. Update Rankings và Sharpe Ratios</text>
+        <text x="590" y="5231" class="title-sm">3. Run Portfolio Optimization với constraints</text>
+        <text x="590" y="5249" class="title-sm">4. So sánh target vs actual weights</text>
+        <text x="590" y="5267" class="title-sm">5. Execute trades cho những positions có drift &gt; threshold</text>
+
+        <text x="590" y="5288" class="text-highlight">⏰ Tần suất: HÀNG THÁNG</text>
+
+
+        <!-- ==================== SUMMARY SECTION ==================== -->
+        <rect x="0" y="5350" width="1100" height="60" fill="#37474f"/>
+        <text x="550" y="5388" text-anchor="middle" class="title-lg" fill="white">📋 SO SÁNH 2 PIPELINE</text>
+
+        <rect x="0" y="5415" width="1100" height="280" class="phase-bg" opacity="0.3"/>
+
+        <!-- Comparison Table -->
+        <rect x="25" y="5430" width="1050" height="250" rx="6" class="box box-eval"/>
+
+        <!-- Headers -->
+        <text x="150" y="5460" text-anchor="middle" class="title-md">Tiêu chí</text>
+        <text x="450" y="5460" text-anchor="middle" class="title-md" fill="#1565c0">🅰️ Pipeline A: TRADING</text>
+        <text x="800" y="5460" text-anchor="middle" class="title-md" fill="#ad1457">🅱️ Pipeline B: INVESTMENT</text>
+        <line x1="40" y1="5475" x2="1060" y2="5475" class="section-divider"/>
+
+        <!-- Rows -->
+        <text x="50" y="5500" class="title-sm">Horizon</text>
+        <text x="450" y="5500" text-anchor="middle" class="text-normal">1-5 ngày</text>
+        <text x="800" y="5500" text-anchor="middle" class="text-normal">1-3 tháng</text>
+
+        <text x="50" y="5522" class="title-sm">Labeling</text>
+        <text x="450" y="5522" text-anchor="middle" class="text-normal">Triple Barrier (3 class)</text>
+        <text x="800" y="5522" text-anchor="middle" class="text-normal">Continuous Return</text>
+
+        <text x="50" y="5544" class="title-sm">Model Type</text>
+        <text x="450" y="5544" text-anchor="middle" class="text-normal">Classification</text>
+        <text x="800" y="5544" text-anchor="middle" class="text-normal">Regression</text>
+
+        <text x="50" y="5566" class="title-sm">Output</text>
+        <text x="450" y="5566" text-anchor="middle" class="text-normal">P(Win), P(Lose), P(Draw)</text>
+        <text x="800" y="5566" text-anchor="middle" class="text-normal">E[Return], Volatility, VaR</text>
+
+        <text x="50" y="5588" class="title-sm">Calibration</text>
+        <text x="450" y="5588" text-anchor="middle" class="text-normal">Platt Scaling / Isotonic</text>
+        <text x="800" y="5588" text-anchor="middle" class="text-normal">Prediction Interval</text>
+
+        <text x="50" y="5610" class="title-sm">Decision</text>
+        <text x="450" y="5610" text-anchor="middle" class="text-normal">Threshold (P &gt; 60%)</text>
+        <text x="800" y="5610" text-anchor="middle" class="text-normal">Ranking (Top N)</text>
+
+        <text x="50" y="5632" class="title-sm">Risk Mgmt</text>
+        <text x="450" y="5632" text-anchor="middle" class="text-normal">Position sizing / trade</text>
+        <text x="800" y="5632" text-anchor="middle" class="text-normal">Portfolio allocation</text>
+
+        <text x="50" y="5654" class="title-sm">Execution</text>
+        <text x="450" y="5654" text-anchor="middle" class="text-normal">TP/SL orders</text>
+        <text x="800" y="5654" text-anchor="middle" class="text-normal">Rebalancing</text>
+
+        <text x="50" y="5676" class="title-sm">Tần suất</text>
+        <text x="450" y="5676" text-anchor="middle" class="text-highlight">Hàng ngày (sau 15:00)</text>
+        <text x="800" y="5676" text-anchor="middle" class="text-highlight">Hàng tháng</text>
+
+
+        <!-- ==================== WHAT'S NEW SUMMARY ==================== -->
+        <rect x="0" y="5710" width="1100" height="220" class="phase-bg" opacity="0.3"/>
+        <rect x="25" y="5725" width="1050" height="190" rx="6" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+        <text x="550" y="5755" text-anchor="middle" class="title-md" fill="#2e7d32">✅ NHỮNG BỔ SUNG QUAN TRỌNG TRONG V2</text>
+
+        <text x="50" y="5785" class="text-normal">• Class Imbalance: SMOTE, Class Weights, Focal Loss</text>
+        <text x="320" y="5785" class="text-normal">• Purged Cross-Validation: Tránh look-ahead bias</text>
+        <text x="620" y="5785" class="text-normal">• Baseline Models: So sánh công bằng</text>
+        <text x="880" y="5785" class="text-normal">• Feature Selection</text>
+
+        <text x="50" y="5810" class="text-normal">• Probability Calibration: Platt Scaling, Isotonic</text>
+        <text x="320" y="5810" class="text-normal">• Hyperparameter Tuning: Optuna + TimeSeriesSplit</text>
+        <text x="620" y="5810" class="text-normal">• Model Diversity: Ensemble đa dạng hơn</text>
+        <text x="880" y="5810" class="text-normal">• Disagreement Signal</text>
+
+        <text x="50" y="5835" class="text-normal">• Position Sizing: Kelly, Vol Targeting</text>
+        <text x="320" y="5835" class="text-normal">• Transaction Costs: Tính phí thực tế VN</text>
+        <text x="620" y="5835" class="text-normal">• Regime Detection: Biết khi nào dừng</text>
+        <text x="880" y="5835" class="text-normal">• Drawdown Control</text>
+
+        <text x="50" y="5860" class="text-normal">• Multi-condition Decision Rule</text>
+        <text x="320" y="5860" class="text-normal">• Model Monitoring: Rolling win rate, PSI</text>
+        <text x="620" y="5860" class="text-normal">• Retrain Schedule: Hàng tháng hoặc PSI trigger</text>
+
+        <text x="50" y="5890" class="text-highlight">• CẤU TRÚC SONG SONG: Tách riêng Trading (Classification) và Investment (Regression)</text>
+        <text x="50" y="5910" class="text-normal">• Quantile Regression: VaR, Prediction Interval</text>
+        <text x="400" y="5910" class="text-normal">• Portfolio Optimization: MVO, Risk Parity</text>
+        <text x="700" y="5910" class="text-normal">• Rebalancing Rules: Threshold, Cost-aware</text>
+
+
+        <!-- ==================== WARNINGS ==================== -->
+        <rect x="0" y="5945" width="1100" height="130" class="phase-bg" opacity="0.3"/>
+        <rect x="25" y="5960" width="1050" height="100" rx="6" fill="#fff5f5" stroke="#e57373" stroke-width="1.5"/>
+        <text x="550" y="5990" text-anchor="middle" class="title-md" fill="#c62828">⚠️ CẢNH BÁO QUAN TRỌNG</text>
+
+        <text x="50" y="6020" class="text-warn">❌ Model không phải "cỗ máy in tiền": Xác suất 65% nghĩa là vẫn thua 35% số lệnh. Quản lý vốn cẩn thận!</text>
+        <text x="50" y="6040" class="text-warn">❌ Backtest ≠ Live trading: Kết quả test trên dữ liệu quá khứ thường đẹp hơn thực tế 20-30%. Paper trade trước!</text>
+        <text x="50" y="6060" class="text-warn">❌ Thị trường thay đổi: Model cần retrain định kỳ. Monitor PSI và rolling performance liên tục.</text>
+
+
+        <!-- ARROWS DEFS -->
+        <defs>
+            <marker id="arrow-main" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+                <polygon points="0 0, 12 4, 0 8" fill="#546e7a"/>
+            </marker>
+            <marker id="arrow-a" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+                <polygon points="0 0, 12 4, 0 8" fill="#1565c0"/>
+            </marker>
+            <marker id="arrow-b" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+                <polygon points="0 0, 12 4, 0 8" fill="#ad1457"/>
+            </marker>
+        </defs>
+    </svg>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-box" style="background:#e3f2fd; border-color:#1976d2;"></div><span>Input</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#fff8e1; border-color:#f9a825;"></div><span>Preprocessing</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#fce4ec; border-color:#c2185b;"></div><span>Triple Barrier</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#e8f5e9; border-color:#388e3c;"></div><span>Base Models</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#f1f8e9; border-color:#689f38;"></div><span>Calibration</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#f3e5f5; border-color:#8e24aa;"></div><span>Finance</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#fff3e0; border-color:#ef6c00;"></div><span>Ensemble</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#ffebee; border-color:#c62828;"></div><span>Output</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#e8eaf6; border-color:#3f51b5;"></div><span>Decision</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#fbe9e7; border-color:#d84315;"></div><span>Risk Mgmt</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#e0f2f1; border-color:#00695c;"></div><span>Execution</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#ede7f6; border-color:#512da8;"></div><span>Regression</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#fff9c4; border-color:#f57f17;"></div><span>Mới bổ sung</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#e3f2fd; border-color:#1565c0; border-width:3px;"></div><span>Pipeline A (Trading)</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#fce4ec; border-color:#ad1457; border-width:3px;"></div><span>Pipeline B (Investment)</span></div>
+    </div>
+</div>
+</body>
+</html>
