@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo KPI GoldenKey 2026 - Compact View</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #f1f5f9;
+        }
+        .golden-text {
+            background: linear-gradient(to right, #fbbf24, #d97706, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(251, 191, 36, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(251, 191, 36, 0.4);
+            box-shadow: 0 4px 20px -5px rgba(251, 191, 36, 0.2);
+        }
+        
+        /* Tab Styles */
+        .tab-btn {
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn.active {
+            color: #fbbf24;
+            border-bottom-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #d97706, #fbbf24, #d97706);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="overflow-x-hidden min-h-screen flex flex-col">
+
+    <!-- Compact Header -->
+    <header class="w-full py-8 bg-slate-900 border-b border-slate-800/50 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center relative z-10 gap-4">
+            <div class="flex items-center gap-4">
+                <!-- LOGO: Ảnh logo GoldenKey -->
+                <div class="w-14 h-14 rounded-full overflow-hidden border border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.4)] relative group">
+                    <div class="absolute inset-0 rounded-full border border-yellow-200/20 animate-ping opacity-20"></div>
+                    <img src="picture/golden_key_invest.jpg" alt="GoldenKey Logo" class="w-full h-full object-cover relative z-10 group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-white leading-none">
+                        GOLDENKEY <span class="text-yellow-500 font-light">2026</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 italic mt-1">"Tạo giá trị đầu tư bằng công nghệ"</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-4 text-center text-xs">
+                 <div class="bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700">
+                    <div class="text-yellow-500 font-bold"><i class="fa-solid fa-bullseye mr-1"></i> Mục Tiêu</div>
+                    <div class="text-slate-300">Dẫn đầu AI Tài chính</div>
+                </div>
+                <div class="bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700">
+                    <div class="text-green-400 font-bold"><i class="fa-solid fa-coins mr-1"></i> Doanh Thu</div>
+                    <div class="text-slate-300">42 - 70 Tỷ VNĐ</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-grow container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT COLUMN: Charts & Roadmap (Wait 30%) -->
+        <aside class="lg:col-span-4 space-y-6">
+            <!-- Charts Carousel / Grid -->
+            <div class="glass-card p-4 rounded-xl">
+                <h3 class="text-sm font-bold text-slate-300 mb-4 border-l-2 border-yellow-500 pl-2 uppercase">Phân bổ trọng số</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-16 h-16"><canvas id="chartInvestSmall"></canvas></div>
+                        <div><div class="text-xs font-bold text-yellow-500">INVESTMENT</div><div class="text-[10px] text-slate-400">Trọng tâm: Hiệu quả & AUM</div></div>
+                    </div>
+                    <div class="w-full h-px bg-slate-700/50"></div>
+                    <div class="flex items-center gap-2">
+                         <div class="w-16 h-16"><canvas id="chartProductSmall"></canvas></div>
+                        <div><div class="text-xs font-bold text-blue-400">PRODUCT & AI</div><div class="text-[10px] text-slate-400">Trọng tâm: Launch & Revenue</div></div>
+                    </div>
+                    <div class="w-full h-px bg-slate-700/50"></div>
+                    <div class="flex items-center gap-2">
+                         <div class="w-16 h-16"><canvas id="chartSalesSmall"></canvas></div>
+                        <div><div class="text-xs font-bold text-green-400">SALES</div><div class="text-[10px] text-slate-400">Trọng tâm: Customer & Sales</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compact Roadmap -->
+            <div class="glass-card p-4 rounded-xl relative overflow-hidden">
+                <h3 class="text-sm font-bold text-slate-300 mb-4 border-l-2 border-orange-500 pl-2 uppercase">Lộ trình 2026</h3>
+                <div class="relative pl-6 space-y-6">
+                    <div class="timeline-line left-[11px]"></div>
+                    
+                    <div class="relative pl-4">
+                        <div class="absolute left-[-5px] top-1 w-3 h-3 bg-yellow-500 rounded-full border-2 border-slate-900 z-10"></div>
+                        <h4 class="text-xs font-bold text-yellow-500">Q1: KHỞI ĐỘNG</h4>
+                        <p class="text-[10px] text-slate-400 mt-1">Hoàn thiện KPI, Ra mắt AI v1, Marketing push.</p>
+                    </div>
+                    <div class="relative pl-4">
+                        <div class="absolute left-[-5px] top-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-slate-900 z-10"></div>
+                        <h4 class="text-xs font-bold text-blue-500">Q2: TĂNG TRƯỞNG</h4>
+                        <p class="text-[10px] text-slate-400 mt-1">Tăng User, Dữ liệu thực, Đẩy mạnh Sales.</p>
+                    </div>
+                    <div class="relative pl-4">
+                        <div class="absolute left-[-5px] top-1 w-3 h-3 bg-purple-500 rounded-full border-2 border-slate-900 z-10"></div>
+                        <h4 class="text-xs font-bold text-purple-500">Q3: NÂNG CẤP</h4>
+                        <p class="text-[10px] text-slate-400 mt-1">AI 2.0, Đánh giá KPI giữa năm.</p>
+                    </div>
+                    <div class="relative pl-4">
+                         <div class="absolute left-[-5px] top-1 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900 z-10"></div>
+                        <h4 class="text-xs font-bold text-green-500">Q4: VỀ ĐÍCH</h4>
+                        <p class="text-[10px] text-slate-400 mt-1">Chạy doanh thu, Đạt AUM, Plan 2027.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT COLUMN: Department Tabs (Width 70%) -->
+        <section class="lg:col-span-8">
+            <!-- Tabs Header -->
+            <div class="flex overflow-x-auto gap-2 mb-4 border-b border-slate-700 pb-1">
+                <button onclick="switchTab('invest')" id="btn-invest" class="tab-btn active px-4 py-2 text-sm font-semibold text-slate-400 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-chart-pie mr-2"></i>Phòng Đầu Tư
+                </button>
+                <button onclick="switchTab('product')" id="btn-product" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-400 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-microchip mr-2"></i>Product & AI
+                </button>
+                <button onclick="switchTab('sales')" id="btn-sales" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-400 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-hand-holding-dollar mr-2"></i>Phòng Kinh Doanh
+                </button>
+            </div>
+
+            <!-- TAB 1: INVEST -->
+            <div id="tab-invest" class="tab-content active space-y-4">
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-yellow-500 border border-yellow-500/20">Tăng trưởng AUM</span>
+                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-yellow-500 border border-yellow-500/20">Tối ưu AI</span>
+                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-yellow-500 border border-yellow-500/20">Quản trị rủi ro</span>
+                </div>
+                
+                <!-- Hero Metrics -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-4 rounded-xl bg-gradient-to-br from-yellow-900/20 to-transparent">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-[10px] text-yellow-500 uppercase font-bold tracking-wider">Hiệu quả danh mục</div>
+                                <div class="text-2xl font-bold text-white mt-1">ROI ≥ 15–20%</div>
+                                <div class="text-[10px] text-slate-400">Theo chiến lược GoldenKey</div>
+                            </div>
+                            <div class="text-yellow-500 font-bold text-lg">30%</div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl bg-gradient-to-br from-yellow-900/20 to-transparent">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-[10px] text-yellow-500 uppercase font-bold tracking-wider">AUM Growth</div>
+                                <div class="text-2xl font-bold text-white mt-1">Tăng ≥ 30%</div>
+                                <div class="text-[10px] text-slate-400">Tài sản quản lý mới & giữ chân</div>
+                            </div>
+                            <div class="text-yellow-500 font-bold text-lg">20%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Metrics Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="glass-card p-3 rounded-lg border-l-2 border-yellow-600">
+                        <div class="text-[10px] text-slate-400 uppercase">Alpha (vs VNINDEX)</div>
+                        <div class="text-sm font-bold text-white">≥ +3%</div>
+                        <div class="text-[9px] text-yellow-500 text-right mt-1 font-bold">10%</div>
+                    </div>
+                    <div class="glass-card p-3 rounded-lg border-l-2 border-yellow-600">
+                        <div class="text-[10px] text-slate-400 uppercase">Max Drawdown</div>
+                        <div class="text-sm font-bold text-white">≤ -8%</div>
+                        <div class="text-[9px] text-yellow-500 text-right mt-1 font-bold">10%</div>
+                    </div>
+                    <div class="glass-card p-3 rounded-lg border-l-2 border-yellow-600">
+                        <div class="text-[10px] text-slate-400 uppercase">Báo cáo phân tích</div>
+                        <div class="text-sm font-bold text-white">4 / Quý</div>
+                        <div class="text-[9px] text-yellow-500 text-right mt-1 font-bold">10%</div>
+                    </div>
+                    <div class="glass-card p-3 rounded-lg border-l-2 border-blue-500">
+                        <div class="text-[10px] text-slate-400 uppercase">AI GoldenKey 2.0</div>
+                        <div class="text-sm font-bold text-white">Hoàn thiện Q3</div>
+                        <div class="text-[9px] text-blue-400 text-right mt-1 font-bold">10%</div>
+                    </div>
+                    <div class="glass-card p-3 rounded-lg">
+                        <div class="text-[10px] text-slate-400 uppercase">Độ chính xác Rec.</div>
+                        <div class="text-sm font-bold text-white">≥ 65%</div>
+                        <div class="text-[9px] text-slate-500 text-right mt-1 font-bold">5%</div>
+                    </div>
+                    <div class="glass-card p-3 rounded-lg">
+                        <div class="text-[10px] text-slate-400 uppercase">Tuân thủ</div>
+                        <div class="text-sm font-bold text-white">0 Vi phạm</div>
+                        <div class="text-[9px] text-slate-500 text-right mt-1 font-bold">5%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PRODUCT -->
+            <div id="tab-product" class="tab-content space-y-4">
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-blue-400 border border-blue-400/20">Hệ sinh thái AI</span>
+                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-blue-400 border border-blue-400/20">Doanh thu Sub</span>
+                </div>
+
+                <!-- Hero Metrics -->
+                <div class="glass-card p-5 rounded-xl bg-gradient-to-r from-blue-900/30 to-slate-900 border-l-4 border-blue-500">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-bold text-white">Ra Mắt Sản Phẩm Mới</h3>
+                        <span class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded font-bold">Trọng số 25%</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="bg-slate-800/50 p-2 rounded">
+                            <i class="fa-solid fa-mobile-screen text-blue-400 mb-1"></i>
+                            <div class="text-xs font-bold">App Mobile</div>
+                        </div>
+                        <div class="bg-slate-800/50 p-2 rounded">
+                            <i class="fa-solid fa-robot text-blue-400 mb-1"></i>
+                            <div class="text-xs font-bold">AI Advisor</div>
+                        </div>
+                         <div class="bg-slate-800/50 p-2 rounded">
+                            <i class="fa-solid fa-chart-column text-blue-400 mb-1"></i>
+                            <div class="text-xs font-bold">Dashboard</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-4 rounded-xl text-center">
+                        <div class="text-[10px] text-green-400 uppercase font-bold">Doanh Thu Sản Phẩm</div>
+                        <div class="text-2xl font-bold text-white my-1">12-20 Tỷ</div>
+                        <div class="w-full bg-slate-700 h-1 rounded mt-2"><div class="bg-green-500 h-1 rounded" style="width: 20%"></div></div>
+                        <div class="text-[9px] text-slate-500 mt-1">Trọng số 20%</div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl text-center">
+                        <div class="text-[10px] text-blue-400 uppercase font-bold">User Hoạt Động</div>
+                        <div class="text-2xl font-bold text-white my-1">10,000</div>
+                        <div class="w-full bg-slate-700 h-1 rounded mt-2"><div class="bg-blue-500 h-1 rounded" style="width: 15%"></div></div>
+                         <div class="text-[9px] text-slate-500 mt-1">Trọng số 15%</div>
+                    </div>
+                </div>
+
+                <!-- List Items -->
+                <div class="space-y-2">
+                    <div class="glass-card px-4 py-2 rounded-lg flex justify-between items-center">
+                        <span class="text-xs text-slate-300">Cập nhật lớn (UI/UX + Algo)</span>
+                        <div class="flex items-center gap-4"><span class="text-sm font-bold text-white">6 Bản</span> <span class="text-[9px] text-blue-400 font-bold">10%</span></div>
+                    </div>
+                    <div class="glass-card px-4 py-2 rounded-lg flex justify-between items-center">
+                        <span class="text-xs text-slate-300">Tỷ lệ giữ chân (Retention)</span>
+                        <div class="flex items-center gap-4"><span class="text-sm font-bold text-white">≥ 60%</span> <span class="text-[9px] text-blue-400 font-bold">10%</span></div>
+                    </div>
+                    <div class="glass-card px-4 py-2 rounded-lg flex justify-between items-center">
+                        <span class="text-xs text-slate-300">Uptime hệ thống</span>
+                        <div class="flex items-center gap-4"><span class="text-sm font-bold text-white">≥ 99%</span> <span class="text-[9px] text-blue-400 font-bold">10%</span></div>
+                    </div>
+                     <div class="glass-card px-4 py-2 rounded-lg flex justify-between items-center">
+                        <span class="text-xs text-slate-300">Hợp tác nội bộ (Deadline)</span>
+                        <div class="flex items-center gap-4"><span class="text-sm font-bold text-white">100%</span> <span class="text-[9px] text-blue-400 font-bold">10%</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: SALES -->
+            <div id="tab-sales" class="tab-content space-y-4">
+                 <div class="flex flex-wrap gap-2 mb-2">
+                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-green-400 border border-green-400/20">Tăng trưởng KH</span>
+                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-green-400 border border-green-400/20">Doanh thu Dịch vụ</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Hero 1 -->
+                    <div class="glass-card p-4 rounded-xl bg-gradient-to-br from-green-900/30 to-transparent border border-green-500/30">
+                        <div class="text-[10px] text-green-400 uppercase font-bold tracking-wider">Tổng Doanh Thu Kinh Doanh</div>
+                        <div class="text-3xl font-bold text-white mt-1">30–50 Tỷ</div>
+                        <div class="mt-2 text-[10px] text-slate-300 flex justify-between">
+                            <span>Từ AI, đầu tư, dịch vụ</span>
+                            <span class="font-bold text-green-400">Trọng số 30%</span>
+                        </div>
+                    </div>
+                     <!-- Hero 2 -->
+                     <div class="glass-card p-4 rounded-xl bg-gradient-to-br from-green-900/30 to-transparent border border-green-500/30">
+                        <div class="text-[10px] text-green-400 uppercase font-bold tracking-wider">Khách hàng mới</div>
+                        <div class="text-3xl font-bold text-white mt-1">600 KH</div>
+                        <div class="mt-2 text-[10px] text-slate-300 flex justify-between">
+                            <span>Từ App + Broker</span>
+                            <span class="font-bold text-green-400">Trọng số 30%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                     <div class="glass-card p-3 rounded-lg border-t-2 border-green-600">
+                        <div class="text-[10px] text-slate-400 uppercase">Tỷ lệ chuyển đổi</div>
+                        <div class="text-sm font-bold text-white">≥ 20%</div>
+                        <div class="text-[9px] text-green-500 text-right mt-1 font-bold">10%</div>
+                    </div>
+                    <div class="glass-card p-3 rounded-lg border-t-2 border-green-600">
+                        <div class="text-[10px] text-slate-400 uppercase">Hiệu suất nhân viên</div>
+                        <div class="text-sm font-bold text-white">2-3 Tỷ/Năm</div>
+                        <div class="text-[9px] text-green-500 text-right mt-1 font-bold">10%</div>
+                    </div>
+                     <div class="glass-card p-3 rounded-lg border-t-2 border-green-600">
+                        <div class="text-[10px] text-slate-400 uppercase">Đào tạo</div>
+                        <div class="text-sm font-bold text-white">4 Khóa/Năm</div>
+                        <div class="text-[9px] text-green-500 text-right mt-1 font-bold">10%</div>
+                    </div>
+                    <div class="glass-card p-3 rounded-lg">
+                        <div class="text-[10px] text-slate-400 uppercase">CSAT (Hài lòng)</div>
+                        <div class="text-sm font-bold text-white">≥ 85%</div>
+                        <div class="text-[9px] text-slate-500 text-right mt-1 font-bold">5%</div>
+                    </div>
+                </div>
+                 <div class="glass-card px-4 py-2 rounded-lg flex justify-between items-center">
+                    <span class="text-xs text-slate-300">Tuân thủ quy định nội bộ</span>
+                    <div class="flex items-center gap-4"><span class="text-sm font-bold text-white">100%</span> <span class="text-[9px] text-slate-500 font-bold">5%</span></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JS Logic -->
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // Show selected content
+            document.getElementById('tab-' + tabId).classList.add('active');
+            // Highlight selected button
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // Mini Charts Initialization
+        Chart.defaults.color = '#94a3b8';
+        const miniOptions = {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            cutout: '70%', borderWidth: 0
+        };
+
+        new Chart(document.getElementById('chartInvestSmall'), {
+            type: 'doughnut',
+            data: { datasets: [{ data: [30, 20, 50], backgroundColor: ['#eab308', '#ca8a04', '#334155'] }] },
+            options: miniOptions
+        });
+        new Chart(document.getElementById('chartProductSmall'), {
+            type: 'doughnut',
+            data: { datasets: [{ data: [25, 20, 55], backgroundColor: ['#3b82f6', '#1d4ed8', '#334155'] }] },
+            options: miniOptions
+        });
+        new Chart(document.getElementById('chartSalesSmall'), {
+            type: 'doughnut',
+            data: { datasets: [{ data: [30, 30, 40], backgroundColor: ['#22c55e', '#15803d', '#334155'] }] },
+            options: miniOptions
+        });
+    </script>
+</body>
+</html>
